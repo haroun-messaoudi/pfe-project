@@ -22,3 +22,6 @@ phonenumbers==8.13.54
 
 # Multiple image handeling
 pillow==10.0.0
+
+# For envirement variables
+python-dotenv==1.0.0

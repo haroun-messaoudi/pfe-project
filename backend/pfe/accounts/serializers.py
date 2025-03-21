@@ -6,8 +6,10 @@ from phonenumber_field.phonenumber import to_python
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile 
-        fields = ["first_name","last_name","phone_number"]
-
+        fields = ["first_name","last_name","phone_number","pk","role"]
+        extra_kwargs = {
+            "pk":{"read_only":True}
+        }
 
     #def create(self, validated_data):
     #     user = self.context['request'].user
@@ -17,12 +19,12 @@ class ProfileSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
     confirm_password = serializers.CharField(write_only=True)
-
     class Meta:
         model = User
-        fields = ["username","email","password","confirm_password",'profile']
+        fields = ["username","email","password","confirm_password",'profile','pk']
         extra_kwargs = {
-            "password":{"write_only":True}
+            "password":{"write_only":True},
+            "pk":{"read_only":True}
         }
     
     def validate(self, attrs):
@@ -39,5 +41,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
         Profile.objects.create(user=user,**profile_data)
 
         return user
-
-    
