@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 import os
+from django.db.models import Avg
 
 
 # Create your models here.
@@ -40,14 +41,66 @@ class Images(models.Model):
     establishement = models.ForeignKey("establishements.Establishement", on_delete=models.CASCADE)
     image = models.ImageField(upload_to=upload_to_establishment_pics, height_field=None, width_field=None, max_length=None)
 
-class Hotel(models.Model):
-    pass
+class Amenity(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+class Hotel(models.Model): 
+    establishement = models.OneToOneField(Establishement, on_delete=models.CASCADE, related_name="hotel",
+                                          null=True,blank=True)  
+    amenities = models.ManyToManyField(Amenity,related_name="hotels")
+    checkInTime = models.TimeField(auto_now=False, auto_now_add=False,default="14:00")
+    checkOutTime = models.TimeField(auto_now=False, auto_now_add=False,default="12:00")
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1
+                                         ,validators=[MinValueValidator(1.0),
+                                                      MaxValueValidator(5.0)
+                                                      ],default=1.0)
+    stars = models.IntegerField(validators=[MinValueValidator(1),
+                                            MaxValueValidator(5)
+                                            ],default=1)
+    def __str__(self):
+        return self.establishement.name
+    def get_average_rating(self):
+        # reviews.objects.filter(hotel=self).aggregate(Avg('rating'))
+        pass
+    
+
 
 class Restaurant(models.Model):
-    pass
+    establishement = models.OneToOneField(Establishement, on_delete=models.CASCADE, related_name="restaurant",
+                                        null=True,blank=True) 
+    name = models.CharField(max_length=100)
+    cuisine = models.ForeignKey('establishements.Cuisine', on_delete=models.CASCADE, related_name="restaurants",blank=True,null=True)
 
+    def __str__(self):
+        return self.establishement.name
+
+class MenuItem(models.Model):
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="menu_items")
+    name = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    price = models.DecimalField(max_digits=10, decimal_places=0)
+
+    def __str__(self):
+        return f"{self.name} - {self.price} DA"
+
+class Cuisine(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
 class Table(models.Model):
-    pass
+    capacity = models.IntegerField(validators=[MinValueValidator(1)])
+    number = models.IntegerField()
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="tables")
+    description = models.TextField(null=True, blank=True)
+    location = models.CharField(max_length=50)
 
 class Room(models.Model):
-    pass
+    capacity = models.IntegerField(validators=[MinValueValidator(1)])
+    number = models.IntegerField()
+    price_per_night = models.DecimalField(max_digits=15, decimal_places=0)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
+    description = models.TextField(null=True, blank=True)
+    room_type = models.CharField(max_length=50)

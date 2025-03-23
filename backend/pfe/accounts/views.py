@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework import permissions
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
 from .models import Profile
 from .serializers import UserProfileSerializer,ProfileSerializer
+
 # Create your views here.
 
 """
@@ -37,3 +40,10 @@ class ProfileUpdateRetreiveView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Profile.objects.filter(user=self.request.user)
     
+class BlackListRefreshToken(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self,request):
+        token = RefreshToken.for_user(request.user)
+        token.blacklist()
+        return Response("Token blacklisted", status=status.HTTP_205_RESET_CONTENT)
