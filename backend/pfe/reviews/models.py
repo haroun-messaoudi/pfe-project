@@ -39,20 +39,10 @@ class ReviewQuestion(models.Model):
     def __str__(self):
         return self.question
 
-
-class ReviewStandard(models.Model):  # Fixed typo (ReviewStardars -> ReviewStandard)
-    questions = models.ManyToManyField("ReviewQuestion")
-    review = models.OneToOneField("Review", on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"Standards for {self.review.title}"
-
-
 class ReviewAnswer(models.Model):
     review = models.ForeignKey(Review, on_delete=models.CASCADE, related_name="answers")
     question = models.ForeignKey(ReviewQuestion, on_delete=models.CASCADE)
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])   
-
     class Meta:
         unique_together = ("review", "question")
 
