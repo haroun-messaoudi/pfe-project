@@ -23,6 +23,12 @@ class Establishement(models.Model):
                                                       ],default=1.0)
     type = models.CharField(max_length=50,choices=ESTABLISHEMENT_TYPES)
 
+    def get_average_rating(self):
+        avg = self.reviews.aggregate(avg=Avg('rating'))['avg']
+        self.average_rating = round(avg, 2) if avg is not None else None
+        self.save(update_fields=['average_rating']) 
+        return self.average_rating
+    
     def __str__(self):
         return self.name
 
@@ -61,9 +67,7 @@ class Hotel(models.Model):
                                             ],default=1)
     def __str__(self):
         return self.establishement.name
-    def get_average_rating(self):
-        # reviews.objects.filter(hotel=self).aggregate(Avg('rating'))
-        pass
+ 
     
 
 
@@ -90,12 +94,16 @@ class Cuisine(models.Model):
 
     def __str__(self):
         return self.name
+    
 class Table(models.Model):
     capacity = models.IntegerField(validators=[MinValueValidator(1)])
     number = models.IntegerField()
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="tables")
     description = models.TextField(null=True, blank=True)
     location = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.restaurant.establishement.name} table with- {self.capacity} seats"
 
 class Room(models.Model):
     capacity = models.IntegerField(validators=[MinValueValidator(1)])
@@ -104,3 +112,6 @@ class Room(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
     description = models.TextField(null=True, blank=True)
     room_type = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return f"{self.hotel.establishement.name} Room with- {self.capacity} beds"
