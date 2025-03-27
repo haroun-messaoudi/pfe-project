@@ -2,7 +2,7 @@ from rest_framework.serializers import ModelSerializer
 from .models import Establishement, Hotel, Restaurant, MenuItem, Cuisine, Table, Room, Amenity,Images
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
-
+from rest_framework import serializers
 class AmenitySerializer(ModelSerializer):
     class Meta:
         model = Amenity
@@ -16,14 +16,17 @@ class HotelSerializer(ModelSerializer):
         }
     def create(self, validated_data):
         request = self.context.get("request") 
-        
-
-        
         establishement = request.user.profile.establishement 
         if hasattr(establishement, "restaurant") or hasattr(establishement, "hotel"):
             raise ValidationError("This establishement already has a hotel or restaurant.")
+        if establishement.type != "hotel":
+            raise ValidationError("This establishement is not a hotel.")
+        amenities_data = validated_data.pop("amenities", [])
+        hotel = Hotel.objects.create(establishement=establishement, **validated_data)
+        hotel.amenities.set(amenities_data)
+        return hotel
+    
 
-        return Hotel.objects.create(establishement=establishement, **validated_data)
 
 class MenuItemSerializer(ModelSerializer):
     class Meta:
@@ -55,18 +58,14 @@ class RestaurantSerializer(ModelSerializer):
     
     def create(self, validated_data):
         request = self.context.get("request") 
-        try:
-            profile = request.user.profile 
-            establishement = profile.establishement  
-        except ObjectDoesNotExist:
-            raise ValidationError("You must have an establishment to create a restaurant.")
+        profile = request.user.profile 
+        establishement = profile.establishement  
         establishement = request.user.profile.establishement 
-        if not hasattr(request.user, "profile") or not hasattr(request.user.profile, "establishement"):
-            raise ValidationError("You must be associated with an establishment to create a restaurant.")
-        
+     
         if hasattr(establishement, "restaurant") or hasattr(establishement, "hotel"):
             raise ValidationError("This establishement already has a hotel or restaurant.")
-        
+        if establishement.type != "restaurant":
+            raise ValidationError("This establishement is not a restaurant.")
         menu_data = validated_data.pop("menu", [])
 
         restaurant = Restaurant.objects.create(establishement=establishement, **validated_data)
@@ -74,6 +73,8 @@ class RestaurantSerializer(ModelSerializer):
             MenuItem.objects.create(restaurant=restaurant, **item)
 
         return restaurant
+    
+
 class TableSerializer(ModelSerializer):
     class Meta:
         model = Table
@@ -81,6 +82,11 @@ class TableSerializer(ModelSerializer):
         extra_kwargs = {
             "restaurant": {"read_only": True},
         }
+    def create(self, validated_data):
+        request = self.context.get("request") 
+        restaurant = request.user.profile.establishement.restaurant
+        return Table.objects.create(restaurant=restaurant, **validated_data)
+
 
 class RoomSerializer(ModelSerializer):
     class Meta:
@@ -89,6 +95,12 @@ class RoomSerializer(ModelSerializer):
         extra_kwargs = {
             "hotel": {"read_only": True},
         }
+    
+    def create(self, validated_data):
+        request = self.context.get("request") 
+        hotel = request.user.profile.establishement.hotel
+        return Room.objects.create(hotel=hotel, **validated_data)
+
 class ImagesSerializer(ModelSerializer):
     class Meta:
         model = Images
@@ -111,3 +123,24 @@ class EstablishementSerializer(ModelSerializer):
         for image_data in images_data.getlist("images"):
             Images.objects.create(establishement=establishement, image=image_data)
         return establishement
+
+
+class RestaurantDetailSerializer(ModelSerializer):
+    menu_items = MenuItemSerializer(many=True, read_only=True) 
+    tables = TableSerializer(many=True, read_only=True)  
+    cuisine = CuisineSerializer(read_only=True) 
+
+    class Meta:
+        model = Restaurant
+        fields = "__all__"
+
+class HotelDetailsSerializer(ModelSerializer):
+    amenities = AmenitySerializer(many=True, read_only=True) 
+    rooms = RoomSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Hotel
+        fields = "__all__"
+        extra_kwargs = {
+            "establishement": {"read_only": True},
+        }

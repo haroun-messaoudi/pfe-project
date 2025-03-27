@@ -11,6 +11,17 @@ urlpatterns = [
     path("list/", views.EstablishementListView.as_view(), name="establishements-list"),
     path("hotel/list/", views.HotelListView.as_view(), name="hotels-list"),
     path("restaurant/list/", views.RestaurantListView.as_view(), name="restaurants-list"),
+    path("update/<int:pk>/", views.EstablishementUpdateView.as_view(), name="establishement-update"),
     path("restaurant/update/<int:pk>/", views.RestaurantUpdateView.as_view(), name="restaurant-update"),
     path("hotel/update/<int:pk>/", views.HotelUpdateView.as_view(), name="hotel-update"),
+    path("restaurant/menu/menu-item/update/<int:pk>/", views.MenuItemUpdateView.as_view(), name="menu-item-update"),
+    path("restaurant/menu/menu-item/create/", views.MenuItemCreationView.as_view(), name="menu-item-create"),
+    path("restaurant/menu/menu-item/delete/", views.MenuItemDeleteView.as_view(), name="menu-item-create"),
+    path("restaurant/table/create/",views.TableCreationView.as_view(),name="table-create"),
+    path("restaurant/table/update/<int:pk>/",views.TableUpdateView.as_view(),name="table-update"),
+    path("restaurant/table/delete/<int:pk>",views.TableDeleteView.as_view(),name="table-delete"),
+    path("hotel/room/create/",views.RoomCreationView.as_view(),name="room-create"),
+    path("hotel/room/update/<int:pk>/",views.RoomUpdateView.as_view(),name="room-update"),
+    path("hotel/room/delete/<int:pk>/",views.RoomDeleteView.as_view(),name="room-delete"),
+
 ]

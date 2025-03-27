@@ -57,8 +57,7 @@ class Amenity(models.Model):
         return self.name
     
 class Hotel(models.Model): 
-    establishement = models.OneToOneField(Establishement, on_delete=models.CASCADE, related_name="hotel",
-                                          null=True,blank=True)  
+    establishement = models.OneToOneField(Establishement, on_delete=models.CASCADE, related_name="hotel",)  
     amenities = models.ManyToManyField(Amenity,related_name="hotels")
     checkInTime = models.TimeField(auto_now=False, auto_now_add=False,default="14:00")
     checkOutTime = models.TimeField(auto_now=False, auto_now_add=False,default="12:00")
@@ -96,7 +95,7 @@ class Cuisine(models.Model):
     
 class Table(models.Model):
     capacity = models.IntegerField(validators=[MinValueValidator(1)])
-    number = models.IntegerField()
+    amount = models.IntegerField()
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="tables")
     description = models.TextField(null=True, blank=True)
     location = models.CharField(max_length=50)
@@ -106,7 +105,7 @@ class Table(models.Model):
 
 class Room(models.Model):
     capacity = models.IntegerField(validators=[MinValueValidator(1)])
-    number = models.IntegerField()
+    amount = models.IntegerField()
     price_per_night = models.DecimalField(max_digits=15, decimal_places=0)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
     description = models.TextField(null=True, blank=True)

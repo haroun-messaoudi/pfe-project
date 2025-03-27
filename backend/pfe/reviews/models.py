@@ -15,7 +15,9 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name="reviews"
     )
-
+    class Meta:
+        unique_together = ("profile", "establishement")
+        
     def calculate_rating(self):
         avg_rating = self.answers.aggregate(avg=Avg('rating'))['avg']
         self.rating = round(avg_rating) if avg_rating is not None else None
