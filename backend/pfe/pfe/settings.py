@@ -151,7 +151,8 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',  # This enables the UI
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',  # Token-based for API clients
+        'rest_framework.authentication.SessionAuthentication',  # Enables Browsable API login
     ),
 }
 

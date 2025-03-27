@@ -13,7 +13,7 @@ class Establishement(models.Model):
         ('restaurant','Restaurant')
         )
     name = models.CharField(max_length=50)
-    profile = models.OneToOneField("accounts.profile",on_delete=models.CASCADE)
+    profile = models.OneToOneField("accounts.profile",on_delete=models.CASCADE,related_name="establishement")
     location = models.TextField()
     phone_number = PhoneNumberField(region="DZ",null=True,blank=True)
     email = models.EmailField(max_length=254)
@@ -46,22 +46,22 @@ def upload_to_establishment_pics(instance, filename):
 class Images(models.Model):
     establishement = models.ForeignKey("establishements.Establishement", on_delete=models.CASCADE)
     image = models.ImageField(upload_to=upload_to_establishment_pics, height_field=None, width_field=None, max_length=None)
-
+    
+    def __str__(self):
+        return f"{self.establishement.name}'s image"
+    
 class Amenity(models.Model):
     name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
+    
 class Hotel(models.Model): 
     establishement = models.OneToOneField(Establishement, on_delete=models.CASCADE, related_name="hotel",
                                           null=True,blank=True)  
     amenities = models.ManyToManyField(Amenity,related_name="hotels")
     checkInTime = models.TimeField(auto_now=False, auto_now_add=False,default="14:00")
     checkOutTime = models.TimeField(auto_now=False, auto_now_add=False,default="12:00")
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1
-                                         ,validators=[MinValueValidator(1.0),
-                                                      MaxValueValidator(5.0)
-                                                      ],default=1.0)
     stars = models.IntegerField(validators=[MinValueValidator(1),
                                             MaxValueValidator(5)
                                             ],default=1)
@@ -74,7 +74,6 @@ class Hotel(models.Model):
 class Restaurant(models.Model):
     establishement = models.OneToOneField(Establishement, on_delete=models.CASCADE, related_name="restaurant",
                                         null=True,blank=True) 
-    name = models.CharField(max_length=100)
     cuisine = models.ForeignKey('establishements.Cuisine', on_delete=models.CASCADE, related_name="restaurants",blank=True,null=True)
 
     def __str__(self):
