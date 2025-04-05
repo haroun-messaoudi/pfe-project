@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*9j=k$*tyr#*#^izs1^t%sq50fgo@&r3&f===kyovdomtq)b@@'
+load_dotenv()
+
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -45,9 +50,10 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'phonenumber_field',
     'accounts',
-    'establishements',
+    'establishements.apps.EstablishementsConfig',
     'reservations',
-    'reviews'
+    'reviews',
+    'algoliasearch_django',
 ]
 
 MIDDLEWARE = [
@@ -161,4 +167,10 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+}
+
+ALGOLIA = {
+   'APPLICATION_ID': os.getenv('ALGOLIA_APP_ID'),
+    'API_KEY': os.getenv('ALGOLIA_API_KEY'),
+    'AUTO_INDEXING':True,
 }

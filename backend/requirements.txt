@@ -26,3 +26,6 @@ pillow==10.0.0
 # For envirement variables
 python-dotenv==1.0.0
 
+# For searching and filtering 
+algoliasearch-django<5.0,>=4.0
+algoliasearch>=4,<5
