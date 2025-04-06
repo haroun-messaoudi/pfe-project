@@ -3,7 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from phonenumber_field.modelfields import PhoneNumberField
 import os
 from django.db.models import Avg
-
+from .choices import ALGERIAN_CITIES
 
 # Create your models here.
 
@@ -12,6 +12,7 @@ class Establishement(models.Model):
         ('hotel','Hotel'),
         ('restaurant','Restaurant')
         )
+
     name = models.CharField(max_length=50)
     profile = models.OneToOneField("accounts.profile",on_delete=models.CASCADE,related_name="establishement")
     location = models.TextField()
@@ -22,7 +23,7 @@ class Establishement(models.Model):
                                                       MaxValueValidator(5.0)
                                                       ],default=1.0)
     type = models.CharField(max_length=50,choices=ESTABLISHEMENT_TYPES)
-
+    city = models.CharField(max_length=50,choices=ALGERIAN_CITIES,default="Médéa",null=True,blank=True)
     def get_average_rating(self):
         avg = self.reviews.aggregate(avg=Avg('rating'))['avg']
         self.average_rating = round(avg, 2) if avg is not None else None

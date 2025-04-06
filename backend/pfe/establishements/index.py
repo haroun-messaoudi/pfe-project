@@ -17,10 +17,11 @@ class EstablishementIndex(AlgoliaIndex):
         
         # Fields usable for filtering/faceting
         'attributesForFaceting': [
-            'filterOnly(type)',
-            'filterOnly(location)',
-            'restaurant_cuisine',  # Filter by cuisine
-            'hotel_amenities',     # Filter by amenities
+            'type',
+            'city',
+            'type',
+            'restaurant_cuisine',
+            'hotel_amenities', 
         ],
     }
 
@@ -36,6 +37,7 @@ class EstablishementIndex(AlgoliaIndex):
             'location': str(instance.location),  # Ensure this is serializable
             'type': instance.type,
             'average_rating': float(instance.average_rating) if instance.average_rating else None,
+            'city': instance.city,
         }
 
         # Handle phone number if exists
