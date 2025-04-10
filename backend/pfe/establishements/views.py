@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from .models import Hotel,Restaurant,Establishement,Table,Room,MenuItem
 from .permissions import IsAssociatedWithEstablishement,IsAssociatedWithHotel,IsAssociatedWithRestaurant,IsOWner
 from . import serializers
+from algoliasearch_django import raw_search
 from django.shortcuts import get_object_or_404
 # Create your views here.
 
@@ -177,3 +178,31 @@ class RoomDeleteView(generics.DestroyAPIView):
 #         tables = Table.objects.filter(restaurant=restaurant)
 #         serializer = serializers.TableSerializer(tables,many=True)
 #         return Response(serializer.data)
+
+class EstablishementSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '')  # Get the search query
+        if not query:
+            return Response({"error": "Query parameter 'q' is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Get filters from the request
+        filters = request.query_params.get('filters', None)
+        if filters:
+            # Ensure filters are passed as a single string (Algolia expects a single string for filters)
+            filters = " AND ".join(filters.split(","))
+        else:
+            filters = ""
+
+        # Build the params dictionary
+        params = {
+            "filters": filters
+        }
+
+        # Perform the search using Algolia
+        try:
+            results = raw_search(Establishement, query, params)
+            hits = results.get("hits", [])
+
+            return Response({"hits": hits,"nbHits": results.get("nbHits", 0),"processingTimeMS": results.get("processingTimeMS", 0)}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

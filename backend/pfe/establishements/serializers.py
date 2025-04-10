@@ -3,6 +3,7 @@ from .models import Establishement, Hotel, Restaurant, MenuItem, Cuisine, Table,
 from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
+from reviews.serializers import ReviewSerializer
 class AmenitySerializer(ModelSerializer):
     class Meta:
         model = Amenity
@@ -110,6 +111,7 @@ class ImagesSerializer(ModelSerializer):
         }
 class EstablishementSerializer(ModelSerializer):
     images = ImagesSerializer(many=True,required=False)
+    reviews = ReviewSerializer(many=True,read_only=True)
     class Meta:
         model = Establishement
         fields = "__all__"

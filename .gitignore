@@ -9,6 +9,9 @@ __pycache__/
 *.log
 *.pot
 *.mo
+# Django migrations
+**/migrations/
+!**/migrations/__init__.py
 
 # Local settings
 .env

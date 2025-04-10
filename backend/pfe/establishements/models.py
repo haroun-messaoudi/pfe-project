@@ -18,10 +18,10 @@ class Establishement(models.Model):
     location = models.TextField()
     phone_number = PhoneNumberField(region="DZ",null=True,blank=True)
     email = models.EmailField(max_length=254)
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1
+    average_rating = models.DecimalField(max_digits=3, decimal_places=1
                                          ,validators=[MinValueValidator(1.0),
                                                       MaxValueValidator(5.0)
-                                                      ],default=1.0)
+                                                      ],default=1.0,null=True,blank=True)
     type = models.CharField(max_length=50,choices=ESTABLISHEMENT_TYPES)
     city = models.CharField(max_length=50,choices=ALGERIAN_CITIES,default="Médéa",null=True,blank=True)
     def get_average_rating(self):

@@ -19,20 +19,18 @@ class EstablishementIndex(AlgoliaIndex):
         'attributesForFaceting': [
             'type',
             'city',
-            'type',
             'restaurant_cuisine',
             'hotel_amenities', 
         ],
     }
 
-
     def get_queryset(self):
         # Ensure only valid establishments are indexed
         return Establishement.objects.all()
 
-    def get_raw_record(self, instance):
+    def get_raw_record(self, instance, **kwargs):
         data = {
-            'objectID': instance.pk,  # Required field
+            'objectID': str(instance.pk),  # Ensure the objectID is a string
             'name': instance.name,
             'location': str(instance.location),  # Ensure this is serializable
             'type': instance.type,

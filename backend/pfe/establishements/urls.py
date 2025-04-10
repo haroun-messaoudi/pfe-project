@@ -23,5 +23,6 @@ urlpatterns = [
     path("hotel/room/create/",views.RoomCreationView.as_view(),name="room-create"),
     path("hotel/room/update/<int:pk>/",views.RoomUpdateView.as_view(),name="room-update"),
     path("hotel/room/delete/<int:pk>/",views.RoomDeleteView.as_view(),name="room-delete"),
+    path("search/", views.EstablishementSearchView.as_view(), name="establishement-search"),
 
 ]
