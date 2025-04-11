@@ -1,0 +1,4 @@
+tailwind:
+-D tailwindcss@latest postcss@latest autoprefixer@latest
+
+tailwindcss init -p 
