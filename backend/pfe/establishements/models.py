@@ -24,6 +24,7 @@ class Establishement(models.Model):
                                                       ],default=1.0,null=True,blank=True)
     type = models.CharField(max_length=50,choices=ESTABLISHEMENT_TYPES)
     city = models.CharField(max_length=50,choices=ALGERIAN_CITIES,default="Médéa",null=True,blank=True)
+    description = models.TextField(null=True,blank=True,default="")
     def get_average_rating(self):
         avg = self.reviews.aggregate(avg=Avg('rating'))['avg']
         self.average_rating = round(avg, 2) if avg is not None else None
