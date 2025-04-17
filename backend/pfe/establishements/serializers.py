@@ -41,9 +41,9 @@ class CuisineSerializer(ModelSerializer):
     class Meta:
         model = Cuisine
         fields = "__all__"
-        extra_kwargs = {
-            "restaurants": {"read_only": True},
-        }
+        # extra_kwargs = {
+        #     "restaurants": {"read_only": True},
+        # }
 
 class RestaurantSerializer(ModelSerializer):
     menu = MenuItemSerializer(many=True,required=False)

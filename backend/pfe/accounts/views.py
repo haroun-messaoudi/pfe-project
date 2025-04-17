@@ -47,3 +47,12 @@ class BlackListRefreshToken(APIView):
         token = RefreshToken.for_user(request.user)
         token.blacklist()
         return Response("Token blacklisted", status=status.HTTP_205_RESET_CONTENT)
+    
+
+class UserDetails(generics.RetrieveAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_object(self):
+        # Return the currently logged-in user
+        return self.request.user

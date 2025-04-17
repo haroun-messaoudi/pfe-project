@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied,NotFound
 from django.contrib.auth.models import User
-from .models import Hotel,Restaurant,Establishement,Table,Room,MenuItem
+from .models import Hotel,Restaurant,Establishement,Table,Room,MenuItem,Amenity,Cuisine
 from .permissions import IsAssociatedWithEstablishement,IsAssociatedWithHotel,IsAssociatedWithRestaurant,IsOWner
 from . import serializers
 from algoliasearch_django import raw_search
@@ -206,3 +206,15 @@ class EstablishementSearchView(APIView):
             return Response({"hits": hits,"nbHits": results.get("nbHits", 0),"processingTimeMS": results.get("processingTimeMS", 0)}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
+class AmenitiesListView(generics.ListAPIView):
+    serializer_class = serializers.AmenitySerializer
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = Amenity.objects.all()
+
+class CuisineListView(generics.ListAPIView):
+    serializer_class = serializers.CuisineSerializer
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    queryset = Cuisine.objects.all()
