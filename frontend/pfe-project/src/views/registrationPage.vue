@@ -124,14 +124,14 @@ const registerUser = async () => {
       <!-- Password -->
       <div>
         <label for="password" class="block text-sm font-medium mb-1">Password</label>
-        <Password id="password" v-model="form.password" class="w-full" toggleMask :feedback="false" placeholder="Password" />
+        <Password id="password" v-model="form.password" class="w-full" toggleMask placeholder="Password" />
         <Message v-if="errors.password" severity="error" class="mt-2">{{ errors.password[0] }}</Message>
       </div>
 
       <!-- Confirm Password -->
       <div>
         <label for="confirmPassword" class="block text-sm font-medium mb-1">Confirm Password</label>
-        <Password id="confirmPassword" v-model="form.confirmPassword" class="w-full" toggleMask :feedback="false" placeholder="Confirm password" />
+        <Password id="confirmPassword" v-model="form.confirmPassword" class="w-full" :feedback=false toggleMask  placeholder="Confirm password" />
         <Message v-if="errors.confirmPassword" severity="error" class="mt-2">{{ errors.confirmPassword[0] }}</Message>
       </div>
 

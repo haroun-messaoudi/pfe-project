@@ -1,9 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import Toastify from 'toastify-js' 
 import { useUserStore } from '@/stores/user'
- // Adjust the import path as necessary
+import InputText from 'primevue/inputtext'
+import Password from 'primevue/password'
+import Button from 'primevue/button'
+import Message from 'primevue/message'
+
 const router = useRouter()
+
 const userStore = useUserStore()
 
 const form = ref({
@@ -11,52 +17,95 @@ const form = ref({
   password: '',
 })
 
+const errors = ref({
+  username: '',
+  password: '',
+  general: '',
+})
+
 const loginUser = async () => {
+
+  errors.value = {
+    username: '',
+    password: '',
+    general: '',
+  }
+
   try {
     await userStore.login(form.value.username, form.value.password)
     await userStore.fetchUserDetails()
-    alert('Login successful!')
-    
-    router.push('/establishement-create') // Now this works fine
+    Toastify({
+      text: 'Login successful!',
+      duration: 3000,
+      gravity: 'top',
+      position: 'right',
+      backgroundColor: '#4CAF50',
+      className: 'toast-success',
+    }).showToast()
+    router.push('/')
   } catch (error) {
-    console.error('Error logging in:', error.response?.data || error.message)
+    const responseError = error.response?.data || {}
+
+    // Display toast error message
+    Toastify({
+      text: responseError.detail || 'An error occurred. Please try again.',
+      duration: 3000,
+      gravity: 'top',
+      position: 'right',
+      backgroundColor: '#FF0000',
+      className: 'toast-error',
+    }).showToast()
+
+    // Field-specific error messages
+    if (responseError.errors){
+      errors.value = {
+        ...errors.value,
+        ...responseError.errors,
+      }
+    }else{
+      errors.value.general = 'Invalid username or password'
+    }
   }
 }
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="max-w-md w-full p-6 bg-white shadow-md rounded-md">
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div class="w-full max-w-md bg-white p-6 rounded-md shadow-md">
       <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
-      <form @submit.prevent="loginUser">
-        <div class="mb-4">
-          <label for="username" class="block text-sm font-medium">Username</label>
-          <input
+      <form @submit.prevent="loginUser" class="space-y-4">
+        <!-- Username -->
+        <div>
+          <label for="username" class="block text-sm font-medium mb-1">Username</label>
+          <InputText
             id="username"
             v-model="form.username"
-            type="text"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="w-full"
             placeholder="Enter your username"
-            required
           />
+          <Message v-if="errors.username" severity="error">{{ errors.username }}</Message>
         </div>
-        <div class="mb-4">
-          <label for="password" class="block text-sm font-medium">Password</label>
-          <input
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium mb-1">Password</label>
+          <Password
             id="password"
             v-model="form.password"
-            type="password"
-            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            toggleMask
+            :feedback=false
+            class="w-full"
+            inputClass="w-full"
             placeholder="Enter your password"
-            required
           />
+          <Message v-if="errors.password" severity="error">{{ errors.password }}</Message>
         </div>
-        <button
-          type="submit"
-          class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700"
-        >
-          Login
-        </button>
+
+        <!-- General error -->
+        <Message v-if="errors.general" severity="error">{{ errors.general }}</Message>
+
+        <!-- Submit button -->
+        <Button label="Login" type="submit" class="w-full" />
       </form>
     </div>
   </div>
