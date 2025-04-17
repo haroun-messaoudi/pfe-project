@@ -107,6 +107,11 @@ const loginUser = async () => {
         <!-- Submit button -->
         <Button label="Login" type="submit" class="w-full" />
       </form>
+      <div class="mt-4 text-center">
+        <router-link to="/register" class="text-blue-500 hover:underline">
+          Don't have an account? Register here
+        </router-link>
+      </div>
     </div>
   </div>
 </template>

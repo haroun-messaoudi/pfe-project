@@ -14,7 +14,7 @@ export const useUserStore = defineStore('user', {
     setAuthenticated(status) {
       this.isAuthenticated = status
     },
-
+    
     async login(username, password) {
       try {
         const response = await api.post('accounts/token/', {
@@ -30,7 +30,7 @@ export const useUserStore = defineStore('user', {
         console.log("in user "+access)
         // Immediately set auth header
         api.defaults.headers.common['Authorization'] = `Bearer ${access}`
-        
+
         return true
       } catch (error) {
         console.error('Login error:', error.response?.data || error.message)
@@ -41,6 +41,7 @@ export const useUserStore = defineStore('user', {
       try {
         const response = await api.get('accounts/details/')
         console.log('User details:', response.data)
+        this.setAuthenticated(true)
         return response.data
       } catch (error) {
         console.error('Error fetching user details:', error.response?.data || error.message)
@@ -75,4 +76,5 @@ export const useUserStore = defineStore('user', {
       // Do NOT use useRouter() here. Handle redirection in the component.
     },
   },
+  persist: true, // Enable persistence
 })

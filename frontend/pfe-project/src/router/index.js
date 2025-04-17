@@ -1,5 +1,6 @@
 
 import EstablishementCreationPage from '@/views/establishementCreationPage.vue'
+import HomePage from '@/views/homePage.vue'
 import LoginPage from '@/views/loginPage.vue'
 import RegistrationPage from '@/views/registrationPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
@@ -23,6 +24,12 @@ const router = createRouter({
       path: '/establishement-create',
       name: 'EstablishementCreate',
       component: EstablishementCreationPage
+    }
+    ,
+    {
+      path: '/',
+      name: 'Home',
+      component: HomePage
     }
   ],
 })

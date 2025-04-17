@@ -174,6 +174,11 @@ const registerUser = async () => {
       <!-- Submit -->
       <Button label="Register" type="submit" class="w-full p-button-lg" />
     </form>
+    <div class="mt-4 text-center">
+      <router-link to="/login" class="text-blue-500 hover:underline">
+        Already have an account? Login here
+      </router-link>
+    </div>
   </div>
 </template>
 
