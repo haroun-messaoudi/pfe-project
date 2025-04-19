@@ -1,7 +1,9 @@
 <script setup>
-import card from '@/components/card.vue';
+import cardsholder from '@/components/cardsholder.vue';
 </script>
 
 <template>
-<card />
+
+<cardsholder />
+
 </template>
