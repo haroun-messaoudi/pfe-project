@@ -1,6 +1,6 @@
 
 import EstablishementCreationPage from '@/views/establishementCreationPage.vue'
-import HomePage from '@/views/homePage.vue'
+import HomePage from '@/views/homepage.vue'
 import LoginPage from '@/views/loginPage.vue'
 import RegistrationPage from '@/views/registrationPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
