@@ -45,6 +45,21 @@ def upload_to_establishment_pics(instance, filename):
 
     return upload_path
 
+def upload_to_table_pics(instance, filename):
+    restaurant_name = instance.restaurant.establishement.name
+    restaurant_name = restaurant_name.replace(" ", "_").lower()
+    upload_path = os.path.join("media", restaurant_name, "tables", filename)
+    
+    return upload_path
+
+def upload_to_room_pics(instance, filename):
+    hotel_name = instance.hotel.establishement.name
+    hotel_name = hotel_name.replace(" ", "_").lower()
+    upload_path = os.path.join("media", hotel_name, "tables", filename)
+
+    return upload_path
+
+
 class Images(models.Model):
     establishement = models.ForeignKey("establishements.Establishement", on_delete=models.CASCADE)
     image = models.ImageField(upload_to=upload_to_establishment_pics, height_field=None, width_field=None, max_length=None)
@@ -101,7 +116,7 @@ class Table(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name="tables")
     description = models.TextField(null=True, blank=True)
     location = models.CharField(max_length=50)
-
+    image = models.ImageField(upload_to=upload_to_table_pics, height_field=None, width_field=None, max_length=None,null=True,blank=True)
     def __str__(self):
         return f"{self.restaurant.establishement.name} table with- {self.capacity} seats"
 
@@ -112,6 +127,6 @@ class Room(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
     description = models.TextField(null=True, blank=True)
     room_type = models.CharField(max_length=50)
-    
+    image = models.ImageField(upload_to=upload_to_room_pics, height_field=None, width_field=None, max_length=None,null=True, blank=True)
     def __str__(self):
         return f"{self.hotel.establishement.name} Room with- {self.capacity} beds"
