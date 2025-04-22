@@ -4,7 +4,12 @@ import Button from 'primevue/button';
 import Rating from 'primevue/rating';
 import { ref } from 'vue';
 
-const value = ref(3);
+
+defineProps({
+    cardInfo:{
+        type:Object,
+    }
+})
 
 </script>
 
@@ -13,16 +18,18 @@ const value = ref(3);
     <template #header>
         <img alt="user header" src="@/assets/img/rest.webp" />
     </template>
-    <template #title>Advanced Card</template>
-    <template #subtitle>Card subtitle</template>
-    <template #content>
+    <template #name>{{ cardInfo.name }}</template>
+    <template #type>{{cardInfo.type}}</template>
+    <template #city> {{ cardInfo.city }}</template>
+    <template #location> {{ cardInfo.location }}</template>
+    <template #description>
         <p class="m-0">
-            waka waka
+            {{cardInfo.description}}
         </p>
     </template>
     <template #footer>
         <div class="card flex justify-center">
-            <Rating class="--p-rating-icon-active-color-red-400" v-model="value" readonly />
+            <Rating class="--p-rating-icon-active-color-red-400" :v-model="cardInfo.average_rating" readonly />
         </div>
 
     </template>

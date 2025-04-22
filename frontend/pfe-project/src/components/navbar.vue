@@ -12,7 +12,7 @@ import Select from 'primevue/select';
 import { ref } from 'vue';
 import RadioButton from 'primevue/radiobutton';
 
-const value = ref('One-Way');
+const value = ref('restaurant');
 const options = ref(['restaurant', 'hotel']);
 
 const selectedCity = ref();
@@ -32,6 +32,13 @@ const cuisines = ref([
     { name: 'syriam', code: 'IST' },
     { name: 'mexicain', code: 'PRS' }
 ]);
+
+
+const secNavBar = ref(false);
+
+const toggleNavBar = () => {
+  secNavBar.value = !secNavBar.value
+}
 </script>
 
 <template>
@@ -44,7 +51,7 @@ const cuisines = ref([
             <InputIcon class="pi pi-search" />
             <InputText v-model="value1" placeholder="Search" size="large" />
         </IconField>
-        <Button class="ml-5" label="filter" severity="info" />
+        <Button @click="toggleNavBar" class="ml-5" label="filter" severity="info" />
         </div>
         <div class="flex justify-between"> 
             <Button label="reservation" text plain />
@@ -68,7 +75,7 @@ const cuisines = ref([
 
 
     
-    <div class="border-b border-gray-800 flex justify-around items-center h-20 w-auto">
+    <div v-if="secNavBar" class="border-b border-gray-800 flex justify-around items-center h-20 w-auto">
 
         <div class="card flex justify-center">
             <SelectButton v-model="value" :options="options" />
@@ -78,14 +85,13 @@ const cuisines = ref([
             <Select v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a City" class="w-full md:w-56" />
         </div>
 
-        <div class="card flex justify-center">
+        <div v-if="value === 'restaurant'" class="card flex justify-center">
             <Select v-model="restaurant_cuisine" :options="cuisines" optionLabel="name" placeholder="cuisines " class="w-full md:w-56" />
         </div>
 
         
-        <div class="flex items-center gap-2">
-            <RadioButton v-model="ingredient" inputId="ingredient1" name="pizza" value="Cheese" />
-            <label for="ingredient1">wifi</label>
+        <div v-else class="card flex justify-center">
+            <Select v-model="hotelAmenitie" :options="hotelAmenities" optionLabel="name" placeholder="cuisines " class="w-full md:w-56" />
         </div>
         
         

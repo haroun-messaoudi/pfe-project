@@ -12,11 +12,7 @@ import card from '@/components/card.vue';
           recommended
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4"> 
-        <card />
-        <card />
-        <card />
-        <card />
-        <card />
+          <card v-for="cardInfo in cardsInfo" />
         </div>
       </div>
 </section>
