@@ -1,16 +1,15 @@
 <script setup>
+// primeVue
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Toolbar from 'primevue/toolbar';
 import Avatar from 'primevue/avatar';
-import InputGroup from 'primevue/inputgroup';
-import InputGroupAddon from 'primevue/inputgroupaddon';
 import SelectButton from 'primevue/selectbutton';
 import Select from 'primevue/select';
 import { ref } from 'vue';
-import RadioButton from 'primevue/radiobutton';
+// routerlink
 import { RouterLink } from 'vue-router';
 
 const value = ref('restaurant');
@@ -120,32 +119,35 @@ const cuisines = [
     'mexicain',
 ].map(cuisine => ({name:cuisine}));
 
-
+// to show and No show the sec-nevbar
 const secNavBar = ref(false);
-
 const toggleNavBar = () => {
   secNavBar.value = !secNavBar.value
 }
 </script>
 
 <template>
-    <div>
+<div>
+    <!-- main navbar -->
     <div class="border-b border-gray-800 flex justify-around items-center">
+        <!-- stay-bite logo -->
         <img class="h-20 w-auto" src="@/assets/img/logo.png" />
-
+        <!-- search bar -->
         <div class="flex  items-center">
         <IconField>
             <InputText v-model="value1" placeholder="Search" size="large" />
             <InputIcon class="pi pi-search" />
         </IconField>
+        <!-- filter button -->
         <Button @click="toggleNavBar" class="ml-5" label="filter" severity="info" />
         </div>
+        <!-- buttons -->
         <div class="flex justify-between"> 
             <Button label="My Reservation" text plain />
             <RouterLink to="/contactUs"> <Button label="Contact Us" text plain />
             </RouterLink>
         </div>
-
+        <!-- profile button -->
         <Toolbar style="border-radius: 3rem; padding: 1rem 2rem 1rem 1rem">
             <template #end>
                 <div class="flex items-center gap-2">
@@ -157,11 +159,8 @@ const toggleNavBar = () => {
         
     </div>
 
-
-
-
-
-    
+    <!-- second navbar for filtering -->
+    <!-- will be shown when filter button been clicked -->
     <div v-if="secNavBar" class="border-b border-gray-800 flex justify-around items-center h-20 w-auto">
 
         <div class="card flex justify-center">
@@ -171,19 +170,14 @@ const toggleNavBar = () => {
         <div class="card flex justify-center">
             <Select v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a City" class="w-full md:w-56" />
         </div>
-
+        <!-- if fitlered by restaurants -->
         <div v-if="value === 'restaurant'" class="card flex justify-center">
             <Select v-model="restaurant_cuisine" :options="cuisines" optionLabel="name" placeholder="Cuisines " class="w-full md:w-56" />
         </div>
-
-        
+        <!-- if fitlered by Hotels -->
         <div v-else class="card flex justify-center">
             <Select v-model="hotelAmenitie" :options="hotelAmenities" optionLabel="name" placeholder="Amenities " class="w-full md:w-56" />
         </div>
-        
-        
-    
-
     </div>
-    </div>
+</div>
 </template>

@@ -1,8 +1,8 @@
 <script setup>
+// primVue imports
 import Card from 'primevue/card';
-import Button from 'primevue/button';
 import Rating from 'primevue/rating';
-import { ref } from 'vue';
+
 
 
 defineProps({
