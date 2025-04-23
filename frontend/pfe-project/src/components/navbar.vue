@@ -148,6 +148,7 @@ const toggleNavBar = () => {
             </RouterLink>
         </div>
         <!-- profile button -->
+        <RouterLink to="/profile">
         <Toolbar style="border-radius: 3rem; padding: 1rem 2rem 1rem 1rem">
             <template #end>
                 <div class="flex items-center gap-2">
@@ -156,7 +157,7 @@ const toggleNavBar = () => {
                 </div>
             </template>
         </Toolbar>
-        
+        </RouterLink>
     </div>
 
     <!-- second navbar for filtering -->

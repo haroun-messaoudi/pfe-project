@@ -1,5 +1,11 @@
 <script setup>
 import card from '@/components/card.vue';
+
+defineProps({
+  cardsInfo:{
+    type:Object
+  }
+})
 </script>
 
 <template>
