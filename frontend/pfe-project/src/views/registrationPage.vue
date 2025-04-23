@@ -45,7 +45,7 @@ const registerUser = async () => {
 
   try {
     // Register the user
-    const response = await axios.post('http://127.0.0.1:8000/api/accounts/register/', {
+    await axios.post('http://127.0.0.1:8000/api/accounts/register/', {
       username: form.value.username,
       email: form.value.email,
       password: form.value.password,
@@ -53,8 +53,8 @@ const registerUser = async () => {
       profile: form.value.profile,
     })
 
-    const profileId = response.data.profile.pk
-    userStore.setProfileId(profileId)
+    // const profileId = response.data.profile.pk
+    // userStore.setProfileId(profileId)
     try{
       await userStore.login(form.value.username, form.value.password)
       await userStore.fetchUserDetails()
@@ -172,7 +172,7 @@ const registerUser = async () => {
       </div>
 
       <!-- Submit -->
-      <Button label="Register" type="submit" class="w-full p-button-lg" />
+      <Button label="Register" type="submit" class="w-full p-button-lg"/>
     </form>
     <div class="mt-4 text-center">
       <router-link to="/login" class="text-blue-500 hover:underline">

@@ -36,9 +36,14 @@ class RestaurantCreationView(generics.CreateAPIView):
     queryset = Restaurant.objects.none()
         
 class EstablishementDetailView(generics.RetrieveAPIView):
-    serializer_class = serializers.EstablishementSerializer
+    serializer_class = serializers.EstablishementDetailsSerializer
     permission_classes = [permissions.IsAuthenticated]
-    queryset = Establishement.objects.all()
+
+    def get_object(self):
+        user_profile = self.request.user.profile
+        if not hasattr(user_profile, "establishement"):
+            raise NotFound("No establishment is associated with the current user.")
+        return user_profile.establishement
 
 class HotelDetailView(generics.RetrieveAPIView):
     serializer_class = serializers.HotelDetailsSerializer

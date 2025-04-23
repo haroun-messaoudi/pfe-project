@@ -1,4 +1,5 @@
 
+import EstablishementOwnerDetails from '@/views/establishementOwnerDetails.vue'
 import EstablishementCreationPage from '@/views/establishementCreationPage.vue'
 import HomePage from '@/views/homePage.vue'
 import LoginPage from '@/views/loginPage.vue'
@@ -30,6 +31,12 @@ const router = createRouter({
       path: '/',
       name: 'Home',
       component: HomePage
+    },
+    {
+      path: '/owner/establishement',
+      name: 'OwnerEstablishement',
+      component: EstablishementOwnerDetails,
+      meta: { requiresAuth: true },
     }
   ],
 })
