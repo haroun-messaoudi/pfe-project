@@ -10,7 +10,7 @@ import myReview from '@/components/myReview.vue'
           My Reviews
         </h2>
         <!-- cards loop -->
-        <div class="flex flex-col md:grid-cols-3 gap-4"> 
+        <div class="flex flex-col  gap-4"> 
           <myReview />
         </div>
       </div>

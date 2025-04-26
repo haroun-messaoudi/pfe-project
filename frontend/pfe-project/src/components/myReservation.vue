@@ -1,0 +1,24 @@
+<script setup>
+import Fieldset from 'primevue/fieldset';
+import Button from 'primevue/button';
+</script>
+
+<template>
+    <div class="">
+        <Fieldset>  
+            <template #legend>
+                <div class="flex items-center pl-2">
+                    <span class="font-bold p-2">choway zaim</span>
+                    <Button type="button" label="Cancel" icon="pi pi-times"severity="danger" />
+                </div>
+            </template>
+            <p class="m-0">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+        </Fieldset>
+        
+
+
+    </div>
+</template>

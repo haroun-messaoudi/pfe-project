@@ -6,6 +6,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Toolbar from 'primevue/toolbar';
 import Avatar from 'primevue/avatar';
+import MultiSelect from 'primevue/multiselect';
 import SelectButton from 'primevue/selectbutton';
 import Select from 'primevue/select';
 import { ref } from 'vue';
@@ -143,7 +144,8 @@ const toggleNavBar = () => {
         </div>
         <!-- buttons -->
         <div class="flex justify-between"> 
-            <Button label="My Reservation" text plain />
+            <RouterLink to="/reservation"> <Button label="My Reservation" text plain />
+            </RouterLink>
             <RouterLink to="/contactUs"> <Button label="Contact Us" text plain />
             </RouterLink>
         </div>
@@ -175,9 +177,10 @@ const toggleNavBar = () => {
         <div v-if="value === 'restaurant'" class="card flex justify-center">
             <Select v-model="restaurant_cuisine" :options="cuisines" optionLabel="name" placeholder="Cuisines " class="w-full md:w-56" />
         </div>
-        <!-- if fitlered by Hotels -->
+        <!-- if fitlered by Hotels -->     
         <div v-else class="card flex justify-center">
-            <Select v-model="hotelAmenitie" :options="hotelAmenities" optionLabel="name" placeholder="Amenities " class="w-full md:w-56" />
+            <MultiSelect v-model="hotelAmenitie" :options="hotelAmenities" optionLabel="name"  filter placeholder="Amenities"
+            :maxSelectedLabels="3" class="w-full md:w-56" />
         </div>
     </div>
 </div>

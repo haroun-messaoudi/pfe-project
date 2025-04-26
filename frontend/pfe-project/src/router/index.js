@@ -7,6 +7,7 @@ import RegistrationPage from '@/views/registrationPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import contactus from '@/views/contactus.vue'
 import profilepage from '@/views/profilepage.vue'
+import reservation from '@/views/reservation.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -48,6 +49,11 @@ const router = createRouter({
       path:'/profile',
       name:'profile',
       component:profilepage,
+    },
+    {
+      path:'/reservation',
+      name:'reservation',
+      component:reservation,
     },
   ],
 })
