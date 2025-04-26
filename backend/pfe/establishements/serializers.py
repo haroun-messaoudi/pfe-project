@@ -146,3 +146,31 @@ class HotelDetailsSerializer(ModelSerializer):
         extra_kwargs = {
             "establishement": {"read_only": True},
         }
+
+class EstablishementDetailsSerializer(ModelSerializer):
+    restaurant = RestaurantDetailSerializer(read_only=True)
+    hotel = HotelDetailsSerializer(read_only=True)
+    images = ImagesSerializer(many=True, required=False)
+    reviews = ReviewSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Establishement
+        fields = "__all__"
+        extra_kwargs = {
+            "average_rating": {"read_only": True},
+            "profile": {"read_only": True},
+        }
+
+    def to_representation(self, instance):
+        """
+        Customize the representation to include either the restaurant or hotel details
+        based on the type of the establishment.
+        """
+        representation = super().to_representation(instance)
+        if hasattr(instance, "restaurant"):
+            representation["details"] = self.fields["restaurant"].to_representation(instance.restaurant)
+        elif hasattr(instance, "hotel"):
+            representation["details"] = self.fields["hotel"].to_representation(instance.hotel)
+        else:
+            representation["details"] = None
+        return representation

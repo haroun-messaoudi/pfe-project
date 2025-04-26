@@ -1,21 +1,30 @@
 <script setup>
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+// import { onMounted } from 'vue'
+// import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-
-const router = useRouter()
+import cardsholder from '@/components/cardsholder.vue';
+import navbar from '@/components/navbar.vue';
+// const router = useRouter()
 const userStore = useUserStore()
 console.log(userStore.isAuthenticated)
-onMounted(() => {
-  if (!userStore.isAuthenticated) {
-    router.push('/login')
-  }
-})
 </script>
+<!-- // onMounted(() => {
+//   if (!userStore.isAuthenticated) {
+//     router.push('/login')
+//   }
+// })
+
+// <template>
+//   <div>
+//     <h1>Welcome to the Homepage</h1>
+//     Add your homepage content here -->
+
+
+
 
 <template>
-  <div>
-    <h1>Welcome to the Homepage</h1>
-    <!-- Add your homepage content here -->
-  </div>
+<div>
+  <navbar />
+  <cardsholder />
+</div>
 </template>

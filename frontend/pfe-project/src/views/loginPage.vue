@@ -70,7 +70,7 @@ const loginUser = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+  <div class="min-h-screen flex items-center justify-center bg-white">
     <div class="w-full max-w-md bg-white p-6 rounded-md shadow-md">
       <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
       <form @submit.prevent="loginUser" class="space-y-4">
@@ -105,7 +105,13 @@ const loginUser = async () => {
         <Message v-if="errors.general" severity="error">{{ errors.general }}</Message>
 
         <!-- Submit button -->
-        <Button label="Login" type="submit" class="w-full" />
+        <Button
+          label="Login"
+          type="submit"
+          class="w-full"
+        />
+
+
       </form>
       <div class="mt-4 text-center">
         <router-link to="/register" class="text-blue-500 hover:underline">

@@ -6,6 +6,7 @@ export const useUserStore = defineStore('user', {
   state: () => ({
     profileId: null,
     isAuthenticated: false,
+    profileRole: "",
   }),
   actions: {
     setProfileId(id) {
@@ -13,6 +14,9 @@ export const useUserStore = defineStore('user', {
     },
     setAuthenticated(status) {
       this.isAuthenticated = status
+    },
+    setProfileRole(role) {
+      this.profileRole = role
     },
     
     async login(username, password) {
@@ -42,6 +46,8 @@ export const useUserStore = defineStore('user', {
         const response = await api.get('accounts/details/')
         console.log('User details:', response.data)
         this.setAuthenticated(true)
+        this.setProfileId(response.data["profile"].pk)
+        this.setProfileRole(response.data["profile"].role)
         return response.data
       } catch (error) {
         console.error('Error fetching user details:', error.response?.data || error.message)
