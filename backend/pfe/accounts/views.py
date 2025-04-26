@@ -37,8 +37,8 @@ class ProfileListView(generics.ListAPIView):
 class ProfileUpdateRetreiveView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProfileSerializer
 
-    def get_queryset(self):
-        return Profile.objects.filter(user=self.request.user)
+    def get_object(self):
+        return self.request.user.profile
     
 class BlackListRefreshToken(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -4,8 +4,11 @@
 import { useUserStore } from '@/stores/user'
 import cardsholder from '@/components/cardsHolder.vue';
 import navbar from '@/components/navbar.vue';
+import { useSearchStore } from '@/stores/searchStore'
 // const router = useRouter()
 const userStore = useUserStore()
+const searchStore = useSearchStore()
+console.log("resulta",searchStore.results)
 console.log(userStore.isAuthenticated)
 </script>
 <!-- // onMounted(() => {
@@ -25,6 +28,6 @@ console.log(userStore.isAuthenticated)
 <template>
 <div>
   <navbar />
-  <cardsholder />
+  <cardsholder :cardsInfo="searchStore.results" />
 </div>
 </template>

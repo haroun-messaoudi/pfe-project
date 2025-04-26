@@ -141,6 +141,7 @@ const createdEstablishmentId = ref(null)
 const fetchCuisines = async () => {
   try {
     const response = await api.get('/establishements/cuisines/list/')
+    console.log(response)
     cuisines.value = response.data.map((item) => ({
       label: item.name,
       value: item.id,

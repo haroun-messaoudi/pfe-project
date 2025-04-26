@@ -74,24 +74,31 @@ class EstablishementUpdateView(generics.UpdateAPIView):
     serializer_class = serializers.EstablishementSerializer
     permission_classes = [permissions.IsAuthenticated,IsAssociatedWithEstablishement]
 
-    def get_queryset(self):
-        return Establishement.objects.filer(profille=self.request.user.profile)
+    def get_object(self):
+        user_profile = self.request.user.profile
+        if not hasattr(user_profile, "establishement"):
+            raise NotFound("No establishment is associated with the current user.")
+        return user_profile.establishement
 class HotelUpdateView(generics.UpdateAPIView):
     serializer_class = serializers.HotelSerializer
     permission_classes = [permissions.IsAuthenticated,IsAssociatedWithHotel]
 
-    def get_queryset(self):
-        establishement = self.request.user.profile.establishement
-        return Hotel.objects.filter(establishement=establishement)
+    def get_object(self):
+        user_profile = self.request.user.profile
+        if not hasattr(user_profile, "establishement"):
+            raise NotFound("No establishment is associated with the current user.")
+        return user_profile.establishement.hotel
     
 class RestaurantUpdateView(generics.UpdateAPIView):
     serializer_class = serializers.RestaurantSerializer
     permission_classes = [permissions.IsAuthenticated,IsAssociatedWithRestaurant]
+    def get_object(self):
+        user_profile = self.request.user.profile
+        if not hasattr(user_profile, "establishement"):
+            raise NotFound("No establishment is associated with the current user.")
+        return user_profile.establishement.restaurant
 
-
-    def get_queryset(self):
-        establishement = self.request.user.profile.establishement
-        return Restaurant.objects.filter(establishement=establishement)
+   
 
 #tables and rooms handling + modifying the hotel and restaurant details view
 class MenuItemCreationView(generics.CreateAPIView):
@@ -137,12 +144,20 @@ class TableUpdateView(generics.UpdateAPIView):
     
 class RoomUpdateView(generics.UpdateAPIView):
     serializer_class = serializers.RoomSerializer
-    permission_classes = [permissions.IsAuthenticated,IsAssociatedWithHotel]
+    permission_classes = [permissions.IsAuthenticated, IsAssociatedWithHotel]
 
     def get_queryset(self):
         establishement = self.request.user.profile.establishement
         return Room.objects.filter(hotel=establishement.hotel)
-    
+
+    def update(self, request, *args, **kwargs):
+        print("Request Data:", request.data)  # Log the incoming request data
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            print("Error during update:", str(e))  # Log the error
+            raise
+   
 class TableDeleteView(generics.DestroyAPIView):
     serializer_class = serializers.TableSerializer
     permission_classes = [permissions.IsAuthenticated,IsAssociatedWithRestaurant]
@@ -186,14 +201,11 @@ class RoomDeleteView(generics.DestroyAPIView):
 
 class EstablishementSearchView(APIView):
     def get(self, request):
-        query = request.query_params.get('q', '')  # Get the search query
-        if not query:
-            return Response({"error": "Query parameter 'q' is required."}, status=status.HTTP_400_BAD_REQUEST)
+        query = request.query_params.get('q', '')  # Default to empty string
 
         # Get filters from the request
         filters = request.query_params.get('filters', None)
         if filters:
-            # Ensure filters are passed as a single string (Algolia expects a single string for filters)
             filters = " AND ".join(filters.split(","))
         else:
             filters = ""
@@ -203,16 +215,18 @@ class EstablishementSearchView(APIView):
             "filters": filters
         }
 
-        # Perform the search using Algolia
         try:
-            results = raw_search(Establishement, query, params)
+            # Use empty string if no query — Algolia will still search using filters only
+            results = raw_search(Establishement, query or "", params)
             hits = results.get("hits", [])
 
-            return Response({"hits": hits,"nbHits": results.get("nbHits", 0),"processingTimeMS": results.get("processingTimeMS", 0)}, status=status.HTTP_200_OK)
+            return Response({
+                "hits": hits,
+                "nbHits": results.get("nbHits", 0),
+                "processingTimeMS": results.get("processingTimeMS", 0)
+            }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-        
-
 
 class AmenitiesListView(generics.ListAPIView):
     serializer_class = serializers.AmenitySerializer

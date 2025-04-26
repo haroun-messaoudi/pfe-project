@@ -1,65 +1,316 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { useEstablishementStore } from '@/stores/establishement'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
+import MultiSelect from 'primevue/multiselect'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
+import Dropdown from 'primevue/dropdown'
+import api from '@/axios'
+
+
 
 const establishementStore = useEstablishementStore();
-const form = ref(null);
+const cities = [
+  'Adrar', 'Chlef', 'Laghouat', 'Oum El Bouaghi', 'Batna', 'Béjaïa', 'Biskra',
+  'Béchar', 'Blida', 'Bouira', 'Tamanrasset', 'Tébessa', 'Tlemcen', 'Tiaret',
+  'Tizi Ouzou', 'Algiers', 'Djelfa', 'Jijel', 'Sétif', 'Saïda', 'Skikda',
+  'Sidi Bel Abbès', 'Annaba', 'Guelma', 'Constantine', 'Médéa', 'Mostaganem',
+  'MSila', 'Mascara', 'Ouargla', 'Oran', 'El Bayadh', 'Illizi', 'Bordj Bou Arréridj',
+  'Boumerdès', 'El Tarf', 'Tindouf', 'Tissemsilt', 'El Oued', 'Khenchela', 'Souk Ahras',
+  'Tipaza', 'Mila', 'Aïn Defla', 'Naâma', 'Aïn Témouchent', 'Ghardaïa', 'Relizane',
+  "Aïn Beïda", "Oum El Bouaghi", "Aïn Oussera", "Bab Ezzouar", "Baraki", "Barika", "Béchar",
+  "Berrouaghia", "Biskra", "Bordj Bou Arréridj", "Bordj El Kiffan", "Bou Saâda", "Chlef", "Corso",
+  "Djelfa", "El Eulma", "El Khroub", "El Marsa", "El Oued", "Flenucleta", "Floriana", "Ghardaïa",
+  "Guelma", "Jijel", "Khenchela", "L'Hillil", "Laghouat", "Larbatache", "Lardjem", "Larhat",
+  "Lazharia", "Lazrou", "Legata", "Lemsane", "Les Eucalyptus", "Lichana", "Lioua", "M'Chedallah",
+  "M'Chouneche", "M'Cid", "M'Cif", "M'Daourouch", "M'Sila", "M'Tarfa", "M'Toussa", "Maadid",
+  "Maala", "Maamora", "Maaouia", "Maarif", "Mâatkas", "Madna", "Maghnia", "Magrane", "Mahdia",
+  "Mahelma", "Makouda", "Mansoura", "Mansoura (Ghardaïa)", "Mansoura (Tlemcen)",
+  "Mansourah (Mostaganem)", "Maoussa", "Marsa Ben M'Hidi", "Mascara", "Mazouna", "Mécheria",
+  "Méchraâ Houari Boumédienne", "Mechraa Safa", "Mechtras", "Médéa", "Mediouna", "Medjana",
+  "Medjebar", "Medjedel", "Medrissa", "Medroussa", "Mefatha", "Meftah", "Megarine", "Meghila",
+  "Mekhadma", "Mekhatria", "Mekla", "Melaab", "Melbou", "Mellakou", "Menaâ", "Menaceur",
+  "Merahna", "Merdja Sidi Abed", "Méridja", "Messaâd", "Metarfa", "Metlili", "Mezaourou",
+  "Mih Ouensa", "Miliana", "Mohammadia", "Mohammedia", "Mostaganem", "Mouadjebara", "Mouzaïa",
+  "N'Gaous", "Nadorah", "Negrine", "Nékmaria", "Nesmoth", "Nezla", "Oran", "Ouadhia",
+  "Ouaguenoun", "Ouargla", "Ouarizane", "Oudjana", "Oued Berkeche", "Oued Chorfa", "Oued Djemaa",
+  "Oued Djer", "Oued El Ma", "Oued Endja", "Oued Fodda", "Oued Ghir", "Oued Sebaa",
+  "Oued Seguen", "Oued Sly", "Oued Taga", "Ouenza", "Ouled Abbes", "Ouled Addi Guebala",
+  "Ouled Addouane", "Ouled Ahmed Timmi", "Ouled Aissa", "Ouled Ammar", "Ouled Antar",
+  "Ouled Aouf", "Ouled Atia", "Ouled Attia", "Ouled Ben Abdelkader", "Ouled Bessem",
+  "Ouled Bouachra", "Ouled Boudjemaa", "Ouled Boughalem", "Ouled Brahem", "Ouled Brahim",
+  "Ouled Chebel", "Ouled Dahmane", "Ouled Derradj", "Ouled Djellal", "Ouled Driss",
+  "Ouled Fadel", "Ouled Farès", "Ouled Fayet", "Ouled Gacem", "Ouled Hamla", "Ouled Hedadj",
+  "Ouled Hellal", "Ouled Khaled", "Ouled Khoudir", "Ouled Kihal", "Ouled Madhi", "Ouled Mansour",
+  "Ouled Mimoun", "Ouled Moumen", "Ouled Moussa", "Ouled Rabah", "Ouled Rached", "Ouled Rahmoun",
+  "Ouled Rechache", "Ouled Riyah", "Ouled Said", "Ouled Sassi", "Ouled Selama", "Ouled Sellam",
+  "Ouled Si Ahmed", "Ouled Si Slimane", "Ouled Sidi Brahim", "Ouled Sidi Mihoub", "Ouled Slimane",
+  "Ouled Tebben", "Ouled Yahia Khedrouche", "Ouled Yaïch", "Oulhaça El Gheraba", "Oultene",
+  "Oum Ali", "Oum Drou", "Oum El Adhaim", "Oum El Assel", "Oum Laadham", "Oum Toub", "Ourlala",
+  "Ourmes", "Ouyoun El Assafir", "Ouzellaguen", "Pigüé", "Rabta", "Ragouba", "Rahbat",
+  "Rahmania", "Rahouia", "Ramdane Djamel", "Ramka", "Raml Souk", "Raouraoua", "Ras El Agba",
+  "Ras El Aioun", "Ras El Oued", "Rechaiga", "Redjem Demouche", "Reggane", "Reghaïa", "Reguiba",
+  "Relizane", "Remchi", "Remila", "Ridane", "Robbah", "Rogassa", "Roknia", "Rouïba", "Rouina",
+  "Sabra", "Safel El Ouiden", "Saïda", "Salah Bey", "Salah Bouchaour", "Sali", "Saneg", "Saoula",
+  "Sayada", "Sbaa", "Sebaïne", "Sebdou", "Sebgag", "Sebt", "Seddouk", "Sedjerara", "Seggana",
+  "Seghouane", "Sehailia", "Sehala Thaoura", "Selma Benziada", "Selmana", "Semaoune", "Sendjas",
+  "Sétif", "Settara", "Sfissifa", "Si Abdelghani", "Si-Mustapha", "Sidi Abdelaziz",
+  "Sidi Abdeldjebar", "Sidi Abdellah", "Sidi Abdelli", "Sidi Abderrahmane", "Sidi Aïch",
+  "Sidi Aïssa", "Sidi Akkacha", "Sidi Ali", "Sidi Ali Benyoub", "Sidi Ali Boussidi",
+  "Sidi Ali Mellal", "Sidi Amar", "Sidi Ameur", "Sidi Aoun", "Sidi Baizid", "Sidi Bakhti",
+  "Sidi Bel Abbès", "Sidi Ben Yebka", "Sidi Boubekeur", "Sidi Boutouchent", "Sidi Brahim",
+  "Sidi Djillali", "Sidi Fredj", "Sidi Hadjeres", "Sidi Hamadouche", "Sidi Khaled",
+  "Sidi Khouiled", "Sidi Lahcene", "Sidi Lakhdar", "Sidi Lantri", "Sidi Lazreg", "Sidi M'Hamed",
+  "Sidi Makhlouf", "Sidi Merouane", "Sidi Mezghiche", "Sidi Moussa", "Sidi Naamane",
+  "Sidi Ouriache", "Sidi Rached", "Sidi Saada", "Sidi Safi", "Sidi Semiane",
+  "Sidi Slimane (El Bayadh)", "Sidi Slimane (Ouargla)", "Sidi Slimane (Tissemsilt)",
+  "Sidi Yacoub", "Sidi Zahar", "Sidi Ziane", "Sidi-Ayad", "Sig", "Sirat", "Skikda", "Sobha",
+  "Souaflia", "Souagui", "Souahlia", "Souamaa", "Souani", "Souarekh", "Sougueur", "Souhane",
+  "Souidania", "Souk Ahras", "Souk El Had", "Souk El Khemis", "Souk El-Had", "Souk El-Thenine",
+  "Souk Naamane", "Souk-Oufella", "Soumaâ", "Sour El-Ghozlane", "Srale", "Stah Guentis",
+  "Stidia", "Tadjenanet", "Tafraoui", "Taga", "Taghit", "Tagmout", "Tahar", "Taibet",
+  "Takdhit", "Tala Hamza", "Tala Ifacene", "Tala Tazert", "Talaghilef", "Talassa", "Tamacine",
+  "Tamalaht", "Tamalous", "Tamanart", "Tamanrasset", "Tamda", "Tameksout", "Tamellaht",
+  "Tamest", "Tamesguida Ouahcene", "Tamesna", "Tamlouka", "Tamokra", "Tamridjet", "Taougrite",
+  "Taourga", "Taourirt", "Tarfaya", "Tarfet", "Tassadane Haddada", "Tassala El Meredja",
+  "Tassoust", "Tatenane", "Tazebt", "Tazgourt", "Tazmalt", "Tebesbest", "Tebessa", "Teffreg",
+  "Teghenif", "Teguest", "Telagh", "Telata", "Telata Ighil", "Telilane", "Temacine",
+  "Temda", "Temloul", "Temnia", "Tenah", "Teniet El Abed", "Teniet En-Nasr", "Ténès",
+  "Terchi", "Terraguelt", "Tessala", "Tessaout", "Tessarit", "Tessella El Adimia",
+  "Tessouk", "Tewrirt", "Thaoura", "Tharaka", "Thelja", "Thenia", "Theveste", "Thiers",
+  "Thioura", "Thlidjen", "Thniet El Had", "Thyout", "Tidda", "Tidjelabine", "Tidjelli",
+  "Tidjerar", "Tidjra", "Tifelfel", "Tiffrit", "Tifrene", "Tifrit Nait El Hadj",
+  "Tifrit Oulemou", "Tifrit Ouled Ali", "Tighezrine", "Tigounatine", "Tiguemine",
+  "Tiguemounine", "Tihamamine", "Tililane", "Timadjerine", "Timadjerte", "Timarzoukt",
+  "Timelouka", "Timengad", "Timermacine", "Timiaouine", "Timizar", "Timizert",
+  "Timlouka", "Timmimoun", "Timokten", "Tin Zouatine", "Tina", "Tinabdher", "Tinah",
+  "Tindouf", "Tinfouchy", "Tinfouchy", "Tinghir", "Tinzaouatine", "Tiouririne",
+  "Tipasa", "Tissemsilt", "Tissemsilt", "Tizi Gheniff", "Tizi Mahdi", "Tizi N'Bechar",
+  "Tizi N'Tleta", "Tizi Ouzou", "Tizi Rached", "Tizi-Ouzou", "Tleta Douair", "Tleta Lakhdara",
+  "Tleta Tafraout", "Tletat Eddouar", "Tlidjene", "Tolga", "Touahria", "Toualbia",
+  "Touama", "Touati", "Touggourt", "Toukbal", "Toumeyrine", "Tounane", "Tounfite",
+  "Tourbet", "Tourda", "Tourtit", "Trad", "Trara", "Trifa", "Trifit", "Tuggurt",
+  "Tylillane", "Tymadjerine", "Tymizar", "Tymokten", "Tynabdher", "Tynzouatine",
+  "Tyouf", "Zaafrania", "Zaarouria", "Zabana", "Zahana", "Zaouia El Abidia",
+  "Zaouia El Kahla", "Zaouia Sidi Abdelkader", "Zaouia Sidi Amar Cherif",
+  "Zaouia Sidi Bouabdellah", "Zaouia Sidi Mbarek", "Zaouiat Kounta", "Zardezas",
+  "Zarzour", "Zbarbar", "Zeboudja", "Zebtana", "Zeghanghane", "Zeghloul", "Zekri",
+  "Zelfana", "Zemala", "Zemoura", "Zéralda", "Zeribet El Oued", "Zerouala", "Zighoud Youcef",
+  "Zitouna", "Zriba"
+].map(city => ({ label: city, value: city }));
+
 const isLoading = ref(true);
 const isDeleting = ref(false);
+const amenities = ref(establishementStore.amenities);
+const cuisines = ref(establishementStore.cuisines);
 
-onMounted(async () => {
-  await refreshForm();
+const newTable = ref({ capacity: null, description: '', amount: null, location: '' });
+const newRoom = ref({ room_type: '', price_per_night: null, amount: null, capacity: null });
+const newMenuItem = ref({ name: '', description: '', price: null });
+
+const errors = reactive(establishementStore.errors)
+const form = ref({
+  establishment: {
+    name: '',
+    location: '',
+    city: '',
+    type: '',
+    email: '',
+    images: [],
+  },
+  hotel: {
+    stars: '',
+    amenities: [],
+    checkInTime: '',
+    checkOutTime: '',
+  },
+  restaurant: {
+    cuisine: '',
+    menu: [],
+  },
 });
 
 const refreshForm = async () => {
   isLoading.value = true;
-  await establishementStore.fetchOwnerEstablishement();
-  if (establishementStore.establishement) {
-    form.value = { ...establishementStore.establishement };
+  try {
+    await establishementStore.fetchOwnerEstablishement();
+    form.value = establishementStore.establishement;
+    await establishementStore.fetchAmenities();
+    console.log('Fetched Amenities:', establishementStore.amenities);
+    amenities.value = establishementStore.amenities.map(a => ({
+      label: a.label,
+      value: a.value
+    }));
+    console.log(amenities)    // Map hotel amenities
+    
+
+    // Debugging: Log the mapped amenities
+    console.log('Mapped Amenities:', form.value.hotel.amenities);
+  } catch (error) {
+    console.error('Error refreshing form:', error);
+  } finally {
+    isLoading.value = false;
   }
-  isLoading.value = false;
+};
+
+
+const updateHotel = async () => {
+  try {
+    const payload = {
+      stars: form.value.hotel.stars,
+      checkInTime: form.value.hotel.checkInTime,
+      checkOutTime: form.value.hotel.checkOutTime,
+      amenities: form.value.hotel.amenities.map((amenity) => amenity.value),
+    };
+
+    console.log('Payload:', payload);
+
+    await establishementStore.updateHotel(payload);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error updating hotel:', error.response?.data || error.message);
+  }
+};
+const updateEstablishement = async () => {
+  try {
+    await establishementStore.updateEstablishement(form.value);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error updating establishment:', error);
+  }
+};
+const addRoom = async () => {
+
+  try {
+    await establishementStore.addRoom(newRoom.value);
+    newRoom.value = { room_type: '', price_per_night: null, amount: null,capacity: null };
+    await refreshForm();
+  } catch (error) {
+    console.error('Error adding room:', error);
+  }
+};
+
+const addTable = async () => {
+
+  try {
+    await establishementStore.addTable(newTable.value);
+    newTable.value = { capacity: null, description: '', amount: null, location: '' };
+    await refreshForm();
+  } catch (error) {
+    console.error('Error adding table:', error);
+  }
+};
+
+const addMenuItem = async () => {
+
+  try {
+    await establishementStore.addMenuItem(newMenuItem.value);
+    newMenuItem.value = { name: '', description: '', price: null };
+    await refreshForm();
+  } catch (error) {
+    console.error('Error adding menu item:', error);
+  }
 };
 
 const updateRoom = async (room) => {
-  await establishementStore.updateRoom(room.id, room);
-  await refreshForm(); // Refresh the form after updating a room
+  try {
+    const payload = {
+      room_type: room.room_type,
+      price_per_night: room.price_per_night,
+      amount: room.amount,
+      capacity: room.capacity,
+    };
+    console.log('room payload:', payload);
+    await establishementStore.updateRoom(room.id, payload);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error updating room:', error);
+  }
 };
 
 const deleteRoom = async (room) => {
   isDeleting.value = true;
-  await establishementStore.deleteRoom(room.id);
-  await refreshForm(); // Refresh the form after deleting a room
-  isDeleting.value = false;
+  try {
+    await establishementStore.deleteRoom(room.id);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error deleting room:', error);
+  } finally {
+    isDeleting.value = false;
+  }
 };
 
 const updateTable = async (table) => {
-  await establishementStore.updateTable(table.id, table);
-  await refreshForm(); // Refresh the form after updating a table
+  try {
+    await establishementStore.updateTable(table.id, table);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error updating table:', error);
+  }
 };
 
 const deleteTable = async (table) => {
   isDeleting.value = true;
-  await establishementStore.deleteTable(table.id);
-  await refreshForm(); // Refresh the form after deleting a table
-  isDeleting.value = false;
+  try {
+    await establishementStore.deleteTable(table.id);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error deleting table:', error);
+  } finally {
+    isDeleting.value = false;
+  }
 };
 
 const updateMenuItem = async (menuItem) => {
-  await establishementStore.updateMenuItem(menuItem.id, menuItem);
-  await refreshForm(); // Refresh the form after updating a menu item
+  try {
+    await establishementStore.updateMenuItem(menuItem.id, menuItem);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error updating menu item:', error);
+  }
 };
 
 const deleteMenuItem = async (menuItem) => {
   isDeleting.value = true;
-  await establishementStore.deleteMenuItem(menuItem.id);
-  await refreshForm(); // Refresh the form after deleting a menu item
-  isDeleting.value = false;
+  try {
+    await establishementStore.deleteMenuItem(menuItem.id);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error deleting menu item:', error);
+  } finally {
+    isDeleting.value = false;
+  }
 };
+
+
+const updateRestaurant = async () => {
+  try {
+    await establishementStore.updateRestaurant(form.value.restaurant);
+    await refreshForm();
+  } catch (error) {
+    console.error('Error updating restaurant:', error);
+  }
+};
+onMounted(async () => {
+  try {
+    await establishementStore.fetchAmenities();
+    amenities.value = establishementStore.amenities.map(a => ({
+      label: a.name,
+      value: a.id
+    }));
+
+    await establishementStore.fetchCuisines();
+    cuisines.value = establishementStore.cuisines;
+
+    await refreshForm();
+  } catch (error) {
+    console.error('Error on mounted:', error);
+  }
+});
 </script>
+
 <template>
   <div v-if="isLoading" class="text-center mt-16">
     <p>Loading establishment details...</p>
@@ -68,30 +319,48 @@ const deleteMenuItem = async (menuItem) => {
   <div v-else class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-md mt-16">
     <h2 class="text-2xl font-bold mb-4">My Establishment</h2>
 
-    <div v-if="establishementStore.errors" class="mb-4">
-      <Message severity="error">{{ establishementStore.errors }}</Message>
-    </div>
-
-    <!-- General Establishment Form -->
-    <form v-if="form" @submit.prevent="updateEstablishement" class="space-y-4">
+    <form @submit.prevent="updateEstablishement" class="space-y-4">
       <div>
         <label class="block font-medium">Name</label>
         <InputText v-model="form.name" class="w-full" placeholder="Enter establishment name" />
+        <Message v-if="errors.name" severity="error">{{ errors.name }}</Message>
       </div>
 
       <div>
         <label class="block font-medium">Location</label>
         <InputText v-model="form.location" class="w-full" placeholder="Enter location" />
+        <Message v-if="errors.location" severity="error">{{ errors.location }}</Message>
       </div>
 
       <div>
         <label class="block font-medium">Email</label>
         <InputText v-model="form.email" class="w-full" placeholder="Enter email" />
+        <Message v-if="errors.email" severity="error">{{ errors.email }}</Message>
       </div>
 
       <div>
         <label class="block font-medium">Phone Number</label>
         <InputText v-model="form.phone_number" class="w-full" placeholder="Enter phone number" />
+        <Message v-if="errors.phone_number" severity="error">{{ errors.phone_number }}</Message>
+      </div>
+
+      <div>
+        <label class="block font-medium">City</label>
+        <Dropdown 
+          v-model="form.city" 
+          :options="cities" 
+          option-label="label" 
+          option-value="value" 
+          class="w-full" 
+          placeholder="Select a city" 
+        />
+        <Message v-if="errors.city" severity="error">{{ errors.city }}</Message>
+      </div>
+
+      <div>
+        <label class="block font-medium">Description</label>
+        <InputText v-model="form.description" class="w-full" placeholder="Enter description" />
+        <Message v-if="errors.description" severity="error">{{ errors.description }}</Message>
       </div>
 
       <Button type="submit" label="Update Establishment" class="w-full" />
@@ -99,56 +368,147 @@ const deleteMenuItem = async (menuItem) => {
 
     <!-- Hotel Details -->
     <div v-if="form?.hotel" class="mt-8">
-      <h3 class="text-xl font-bold mb-4">Hotel Details</h3>
+  <h3 class="text-xl font-bold mb-4">Hotel Details</h3>
+  <div>
+    <label class="block font-medium">Stars</label>
+    <InputNumber v-model="form.hotel.stars" class="w-full" placeholder="Enter hotel stars" :min="1" :max="5" />
+    <Message v-if="errors.hotel.stars" severity="error">{{ errors.hotel.stars }}</Message>
+  </div>
+  <div>
+    <label class="block font-medium">Check-In Time</label>
+    <InputText v-model="form.hotel.checkInTime" class="w-full" placeholder="Enter check-in time (e.g., 14:00)" />
+    <Message v-if="errors.hotel.checkInTime" severity="error">{{ errors.hotel.checkInTime }}</Message>
+  </div>
+  <div>
+    <label class="block font-medium">Check-Out Time</label>
+    <InputText v-model="form.hotel.checkOutTime" class="w-full" placeholder="Enter check-out time (e.g., 12:00)" />
+    <Message v-if="errors.hotel.checkOutTime" severity="error">{{ errors.hotel.checkOutTime }}</Message>
+  </div>
+  <div>
+    <label class="block font-medium">Amenities</label>
+    <MultiSelect
+      v-model="form.hotel.amenities"
+      :options="amenities"
+      option-label="label"
+      option-value="value"
+      class="w-full"
+      placeholder="Select amenities"
+    />
+    <Message v-if="errors.hotel.amenities" severity="error">{{ errors.hotel.amenities }}</Message>
+  </div>
+  <Button label="Update Hotel" class="p-button-success mt-4" @click="updateHotel" />
+</div>
+    <!-- Rooms Section -->
+    <h4 class="text-lg font-bold mt-4">Rooms</h4>
+    <div v-for="room in form.hotel?.rooms" :key="room.id" class="border p-4 rounded-md mb-4">
       <div>
-        <label class="block font-medium">Stars</label>
-        <InputNumber v-model="form.hotel.stars" class="w-full" placeholder="Enter hotel stars" :min="1" :max="5" />
+        <label class="block font-medium">Room Type</label>
+        <InputText v-model="room.room_type" class="w-full" placeholder="Enter room type" />
+        <Message v-if="errors.newRoom.room_type" severity="error">{{ errors.newRoom.room_type }}</Message>
       </div>
       <div>
-        <label class="block font-medium">Amenities</label>
-        <InputText v-model="form.hotel.amenities" class="w-full" placeholder="Enter amenities (comma-separated)" />
+        <label class="block font-medium">Price Per Night</label>
+        <InputNumber v-model="room.price_per_night" class="w-full" placeholder="Enter price per night" />
+        <Message v-if="errors.newRoom.price_per_night" severity="error">{{ errors.newRoom.price_per_night }}</Message>
       </div>
-
-      <h4 class="text-lg font-bold mt-4">Rooms</h4>
-      <div v-for="room in form.hotel?.rooms" :key="room.id" class="border p-4 rounded-md mb-4">
-        <div>
-          <label class="block font-medium">Room Type</label>
-          <InputText v-model="room.room_type" class="w-full" placeholder="Enter room type" />
-        </div>
-        <div>
-          <label class="block font-medium">Price Per Night</label>
-          <InputNumber v-model="room.price_per_night" class="w-full" placeholder="Enter price per night" />
-        </div>
-        <div class="flex space-x-4 mt-2">
-          <Button label="Update Room" class="p-button-success" @click="updateRoom(room)" />
-          <Button label="Delete Room" class="p-button-danger" @click="deleteRoom(room)" />
-        </div>
+      <div>
+        <label class="block font-medium">Amount</label>
+        <InputNumber v-model="room.amount" class="w-full" placeholder="Enter room amount" />
+        <Message v-if="errors.newRoom.amount" severity="error">{{ errors.newRoom.amount }}</Message>
+      </div>
+      <div>
+        <label class="block font-medium">Capacity</label>
+        <InputNumber v-model="room.capacity" class="w-full" placeholder="Enter room capacity" />
+        <Message v-if="errors.newRoom.capacity" severity="error">{{ errors.newRoom.capacity }}</Message>
+      </div>
+      <div class="flex space-x-4 mt-2">
+        <Button label="Update Room" class="p-button-success" @click="updateRoom(room)" />
+        <Button label="Delete Room" class="p-button-danger" :disabled="isDeleting" @click="deleteRoom(room)" />
       </div>
     </div>
 
+    <!-- Add New Room -->
+    <div v-if="form?.hotel" class="mt-8">
+      <h5 class="text-md font-bold mb-2">Add New Room</h5>
+      <div>
+        <label class="block font-medium">Room Type</label>
+        <InputText v-model="newRoom.room_type" class="w-full" placeholder="Enter room type" />
+        <Message v-if="errors.newRoom.room_type" severity="error">{{ errors.newRoom.room_type }}</Message>
+      </div>
+      <div>
+        <label class="block font-medium">Price Per Night</label>
+        <InputNumber v-model="newRoom.price_per_night" class="w-full" placeholder="Enter price per night" />
+        <Message v-if="errors.newRoom.price_per_night" severity="error">{{ errors.newRoom.price_per_night }}</Message>
+      </div>
+      <div>
+        <label class="block font-medium">Amount</label>
+        <InputNumber v-model="newRoom.amount" class="w-full" placeholder="Enter room amount" />
+        <Message v-if="errors.newRoom.amount" severity="error">{{ errors.newRoom.amount }}</Message>
+      </div>
+      <div>
+        <label class="block font-medium">Capacity</label>
+        <InputNumber v-model="newRoom.capacity" class="w-full" placeholder="Enter room capacity" />
+        <Message v-if="errors.newRoom.capacity" severity="error">{{ errors.newRoom.capacity }}</Message>
+      </div>
+      <Button label="Add Room" class="p-button-success mt-2" @click="addRoom" />
+    </div>
     <!-- Restaurant Details -->
     <div v-if="form?.restaurant" class="mt-8">
       <h3 class="text-xl font-bold mb-4">Restaurant Details</h3>
-      <p><strong>Cuisine:</strong> {{ form?.restaurant?.cuisine?.name || 'N/A' }}</p>
-
+      <div>
+        <label class="block font-medium">Cuisines</label>
+        <Dropdown
+          v-model="form.restaurant.cuisine"
+          :options="cuisines"
+          option-label="label"
+          option-value="value"
+          placeholder="Select a cuisine"
+          class="w-full"
+        />
+        <Message v-if="errors.restaurant.cuisines" severity="error">{{ errors.restaurant.cuisines }}</Message>
+      </div>
+      <Button label="Update Restaurant" class="p-button-success mt-4" @click="updateRestaurant" />
       <h4 class="text-lg font-bold mt-4">Menu Items</h4>
       <div v-for="menuItem in form.restaurant?.menu_items" :key="menuItem.id" class="border p-4 rounded-md mb-4">
         <div>
           <label class="block font-medium">Name</label>
           <InputText v-model="menuItem.name" class="w-full" placeholder="Enter menu item name" />
+          <Message v-if="errors.newMenuItem.name" severity="error">{{ errors.newMenuItem.name }}</Message>
         </div>
         <div>
           <label class="block font-medium">Description</label>
           <InputText v-model="menuItem.description" class="w-full" placeholder="Enter menu item description" />
+          <Message v-if="errors.newMenuItem.description" severity="error">{{ errors.newMenuItem.description }}</Message>
         </div>
         <div>
           <label class="block font-medium">Price</label>
           <InputNumber v-model="menuItem.price" class="w-full" placeholder="Enter menu item price" />
+          <Message v-if="errors.newMenuItem.price" severity="error">{{ errors.newMenuItem.price }}</Message>
         </div>
         <div class="flex space-x-4 mt-2">
           <Button label="Update Menu Item" class="p-button-success" @click="updateMenuItem(menuItem)" />
-          <Button label="Delete Menu Item" class="p-button-danger" @click="deleteMenuItem(menuItem)" />
+          <Button label="Delete Menu Item" class="p-button-danger" :disabled="isDeleting" @click="deleteMenuItem(menuItem)" />
         </div>
+      </div>
+
+      <div>
+        <h5 class="text-md font-bold mb-2">Add New Menu Item</h5>
+        <div>
+          <label class="block font-medium">Name</label>
+          <InputText v-model="newMenuItem.name" class="w-full" placeholder="Enter menu item name" />
+          <Message v-if="errors.newMenuItem.name" severity="error">{{ errors.newMenuItem.name }}</Message>
+        </div>
+        <div>
+          <label class="block font-medium">Description</label>
+          <InputText v-model="newMenuItem.description" class="w-full" placeholder="Enter menu item description" />
+          <Message v-if="errors.newMenuItem.description" severity="error">{{ errors.newMenuItem.description }}</Message>
+        </div>
+        <div>
+          <label class="block font-medium">Price</label>
+          <InputNumber v-model="newMenuItem.price" class="w-full" placeholder="Enter menu item price" />
+          <Message v-if="errors.newMenuItem.price" severity="error">{{ errors.newMenuItem.price }}</Message>
+        </div>
+        <Button label="Add Menu Item" class="p-button-success mt-2" @click="addMenuItem" />
       </div>
 
       <h4 class="text-lg font-bold mt-4">Tables</h4>
@@ -156,24 +516,47 @@ const deleteMenuItem = async (menuItem) => {
         <div>
           <label class="block font-medium">Capacity</label>
           <InputNumber v-model="table.capacity" class="w-full" placeholder="Enter table capacity" />
+          <Message v-if="errors.newTable.capacity" severity="error">{{ errors.newTable.capacity }}</Message>
         </div>
         <div>
           <label class="block font-medium">Description</label>
           <InputText v-model="table.description" class="w-full" placeholder="Enter table description" />
+          <Message v-if="errors.newTable.description" severity="error">{{ errors.newTable.description }}</Message>
+        </div>
+        <div>
+          <label class="block font-medium">Amount</label>
+          <InputNumber v-model="table.amount" class="w-full" placeholder="Enter table amount" />
+          <Message v-if="errors.newTable.amount" severity="error">{{ errors.newTable.amount }}</Message>
         </div>
         <div class="flex space-x-4 mt-2">
           <Button label="Update Table" class="p-button-success" @click="updateTable(table)" />
-          <Button label="Delete Table" class="p-button-danger" @click="deleteTable(table)" />
+          <Button label="Delete Table" class="p-button-danger" :disabled="isDeleting" @click="deleteTable(table)" />
         </div>
       </div>
-    </div>
 
-    <!-- Reviews -->
-    <div v-if="form?.reviews?.length" class="mt-8">
-      <h3 class="text-xl font-bold mb-4">Reviews</h3>
-      <div v-for="review in form.reviews" :key="review.id" class="border p-4 rounded-md mb-4">
-        <p><strong>Rating:</strong> {{ review.rating }}</p>
-        <p><strong>Comment:</strong> {{ review.comment }}</p>
+      <div>
+        <h5 class="text-md font-bold mb-2">Add New Table</h5>
+        <div>
+          <label class="block font-medium">Capacity</label>
+          <InputNumber v-model="newTable.capacity" class="w-full" placeholder="Enter table capacity" />
+          <Message v-if="errors.newTable.capacity" severity="error">{{ errors.newTable.capacity }}</Message>
+        </div>
+        <div>
+          <label class="block font-medium">Description</label>
+          <InputText v-model="newTable.description" class="w-full" placeholder="Enter table description" />
+          <Message v-if="errors.newTable.description" severity="error">{{ errors.newTable.description }}</Message>
+        </div>
+        <div>
+          <label class="block font-medium">Amount</label>
+          <InputNumber v-model="newTable.amount" class="w-full" placeholder="Enter table amount" />
+          <Message v-if="errors.newTable.amount" severity="error">{{ errors.newTable.amount }}</Message>
+        </div>
+        <div>
+          <label class="block font-medium">Location</label>
+          <InputText v-model="newTable.location" class="w-full" placeholder="Enter table location" />
+          <Message v-if="errors.newTable.location" severity="error">{{ errors.newTable.location }}</Message>
+        </div>
+        <Button label="Add Table" class="p-button-success mt-2" @click="addTable" />
       </div>
     </div>
   </div>
