@@ -1,33 +1,29 @@
 <script setup>
-// import { onMounted } from 'vue'
-// import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import cardsholder from '@/components/cardsHolder.vue';
 import navbar from '@/components/navbar.vue';
 import { useSearchStore } from '@/stores/searchStore'
-// const router = useRouter()
+import { useTopEstablishmentsStore } from '@/stores/topEstablishments';
+import { onMounted } from 'vue';
+
+const topEstablishmentsStore = useTopEstablishmentsStore();
+
+onMounted(() => {
+  topEstablishmentsStore.fetchBestHotels(); // Fetch best-rated hotels
+  topEstablishmentsStore.fetchBestRestaurants(); // Fetch best-rated restaurants
+});
+
+
 const userStore = useUserStore()
 const searchStore = useSearchStore()
-console.log("resulta",searchStore.results)
+console.log("resulta", searchStore.results)
 console.log(userStore.isAuthenticated)
 </script>
-<!-- // onMounted(() => {
-//   if (!userStore.isAuthenticated) {
-//     router.push('/login')
-//   }
-// })
-
-// <template>
-//   <div>
-//     <h1>Welcome to the Homepage</h1>
-//     Add your homepage content here -->
-
-
-
 
 <template>
-<div>
-  <navbar />
-  <cardsholder :cardsInfo="searchStore.results" />
-</div>
+  <div>
+    <navbar page="home" />
+      <cardsholder :cardsInfo="topEstablishmentsStore.bestRestaurants.hits" :title="'Best Restaurants'" />
+      <cardsholder :cardsInfo="topEstablishmentsStore.bestHotels.hits" :title="'Best Hotels'" />
+  </div>
 </template>

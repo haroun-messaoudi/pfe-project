@@ -21,7 +21,9 @@ class EstablishementIndex(AlgoliaIndex):
             'city',
             'restaurant_cuisine',
             'hotel_amenities', 
+            
         ],
+        'replicas': ['Establishement_average_rating_desc']
     }
 
     def get_queryset(self):
@@ -36,6 +38,7 @@ class EstablishementIndex(AlgoliaIndex):
             'type': instance.type,
             'average_rating': float(instance.average_rating) if instance.average_rating else None,
             'city': instance.city,
+            'description': instance.description,
         }
 
         # Handle phone number if exists
@@ -59,3 +62,4 @@ class EstablishementIndex(AlgoliaIndex):
             })
 
         return data
+    

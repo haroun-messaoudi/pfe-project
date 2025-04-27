@@ -190,6 +190,7 @@ export const useEstablishementStore = defineStore('establishement', {
           filters: filterString
         }
       });
+      console.log("search response",response.data)
       return response.data;
     },    
     setErrors(backendErrors) {

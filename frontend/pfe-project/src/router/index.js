@@ -7,6 +7,7 @@ import RegistrationPage from '@/views/registrationPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import contactus from '@/views/contactus.vue'
 import profilepage from '@/views/profilePage.vue'
+import SearchResult from '@/views/searchResult.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +50,11 @@ const router = createRouter({
       name:'profile',
       component:profilepage,
     },
+    {
+      path:'/searchResult',
+      name:'searchResult',
+      component:SearchResult
+    }
   ],
 })
 
