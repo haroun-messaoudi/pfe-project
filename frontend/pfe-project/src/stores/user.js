@@ -58,6 +58,7 @@ export const useUserStore = defineStore('user', {
     async refreshAccessToken() {
       try {
         const refreshToken = localStorage.getItem('refreshToken')
+        console.log(refreshToken)
         if (!refreshToken) throw new Error('No refresh token available')
 
         const response = await axios.post('http://127.0.0.1:8000/api/accounts/token/refresh/', {

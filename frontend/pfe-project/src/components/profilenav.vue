@@ -6,8 +6,8 @@ import { RouterLink } from 'vue-router';
 <template>
 <div class="h-20 border-b border-gray-800 flex justify-between items-center px-5">
 <RouterLink to="/">
-<div class="flex space-x-4  border-2 border-gray-500 p-3 rounded-lg">
-    <i class="pi-angle-left"></i>
+<div class="flex space-x-4 items-center  border-2 border-gray-500 p-3 rounded-lg">
+    <i class="pi pi-home"></i>
     <p>Home Page</p>
 </div>
 </RouterLink>

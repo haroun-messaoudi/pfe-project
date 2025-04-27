@@ -6,22 +6,16 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Toolbar from 'primevue/toolbar';
 import Avatar from 'primevue/avatar';
-import SelectButton from 'primevue/selectbutton';
 import Select from 'primevue/select';
 import { ref } from 'vue';
 // routerlink
 import { RouterLink } from 'vue-router';
+import { useEstablishementStore } from '@/stores/establishement.js';
+import { onMounted } from 'vue';
+import { useSearchStore } from '@/stores/searchStore.js';
+import { MultiSelect } from 'primevue';
 
-const value = ref('restaurant');
-const options = ref(['restaurant', 'hotel']);
-
-
-const hotelAmenitie = ref();
-const hotelAmenities = [
-    'wifi','pool','3fsa zyada'
-].map(amenity => ({ name:amenity }))
-
-const selectedCity = ref();
+const searchStore = useSearchStore();
 const cities = [
   'Adrar', 'Chlef', 'Laghouat', 'Oum El Bouaghi', 'Batna', 'Béjaïa', 'Biskra',
   'Béchar', 'Blida', 'Bouira', 'Tamanrasset', 'Tébessa', 'Tlemcen', 'Tiaret',
@@ -110,20 +104,64 @@ const cities = [
   "Zelfana", "Zemala", "Zemoura", "Zéralda", "Zeribet El Oued", "Zerouala", "Zighoud Youcef",
   "Zitouna", "Zriba"
 ].map(city => ({ name: city }));
+const value = ref('restaurant');
+const establishementStore = useEstablishementStore();
+const hotelAmenitie = ref();
 const restaurant_cuisine = ref();
-const cuisines = [
-    'algerian',
-    'french',
-    'pol',
-     'syriam',
-    'mexicain',
-].map(cuisine => ({name:cuisine}));
+const selectedCity = ref();
+const searchQuery = ref(''); // Declare searchQuery
+const cuisines = ref([]);
+const amenities = ref([]);
+
 
 // to show and No show the sec-nevbar
 const secNavBar = ref(false);
 const toggleNavBar = () => {
   secNavBar.value = !secNavBar.value
 }
+onMounted(async () => {
+  await establishementStore.fetchCuisines();
+  await establishementStore.fetchAmenities();
+  console.log('Cuisines:', establishementStore.cuisines);
+  console.log('Amenities:', establishementStore.amenities);
+  cuisines.value = establishementStore.cuisines;
+  amenities.value = establishementStore.amenities;
+});
+
+// Bind cuisines and amenities from the store
+const search = async () => {
+  const filters = [];
+
+  if (value.value) {
+    filters.push(`type:${value.value}`);
+  }
+
+  if (value.value === 'restaurant' && restaurant_cuisine.value) {
+    filters.push(`restaurant_cuisine:${restaurant_cuisine.value}`);
+  }
+
+  if (value.value === 'hotel' && hotelAmenitie.value && hotelAmenitie.value.length > 0) {
+        hotelAmenitie.value.forEach((amenity) => {
+      filters.push(`hotel_amenities:${amenity}`);
+    });
+  }
+
+  if (selectedCity.value) {
+    filters.push(`city:${selectedCity.value}`);
+  }
+
+  console.log('Constructed Filters:', filters);
+
+  try {
+    const results = await establishementStore.searchEstablishements(searchQuery.value, filters);
+    searchStore.setSearchResults(results);
+    console.log('Search Results:', results);
+  } catch (error) {
+    console.error('Error during search:', error);
+  }
+};
+
+
 </script>
 
 <template>
@@ -135,8 +173,8 @@ const toggleNavBar = () => {
         <!-- search bar -->
         <div class="flex  items-center">
         <IconField>
-            <InputText v-model="value1" placeholder="Search" size="large" />
-            <InputIcon class="pi pi-search" />
+            <InputText v-model="searchQuery" placeholder="Search" size="large" />
+            <InputIcon class="pi pi-search cursor-pointer"  @click="search"/>
         </IconField>
         <!-- filter button -->
         <Button @click="toggleNavBar" class="ml-5" label="filter" severity="info" />
@@ -164,20 +202,51 @@ const toggleNavBar = () => {
     <!-- will be shown when filter button been clicked -->
     <div v-if="secNavBar" class="border-b border-gray-800 flex justify-around items-center h-20 w-auto">
 
-        <div class="card flex justify-center">
-            <SelectButton v-model="value" :options="options" />
+        <div class="flex space-x-4">
+        <Button
+            label="Restaurant"
+            :severity="value === 'restaurant' ? 'primary' : 'secondary'"
+            @click="() => value = 'restaurant'"
+        />
+        <Button
+            label="Hotel"
+            :severity="value === 'hotel' ? 'primary' : 'secondary'"
+            @click="() => value = 'hotel'"
+        />
         </div>
-        
+                
         <div class="card flex justify-center">
-            <Select v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a City" class="w-full md:w-56" />
+            <Select
+                v-model="selectedCity"
+                :options="cities"
+                optionLabel="name"
+                optionValue="name"
+                placeholder="Select a City"
+                class="w-full md:w-56"
+            />
         </div>
         <!-- if fitlered by restaurants -->
         <div v-if="value === 'restaurant'" class="card flex justify-center">
-            <Select v-model="restaurant_cuisine" :options="cuisines" optionLabel="name" placeholder="Cuisines " class="w-full md:w-56" />
+            <Select
+                v-model="restaurant_cuisine"
+                :options="cuisines"
+                optionLabel="label"
+                optionValue="label"
+                placeholder="Cuisines"
+                class="w-full md:w-56"
+            />  
         </div>
-        <!-- if fitlered by Hotels -->
+        <!-- If filtered by Hotels -->
         <div v-else class="card flex justify-center">
-            <Select v-model="hotelAmenitie" :options="hotelAmenities" optionLabel="name" placeholder="Amenities " class="w-full md:w-56" />
+          <MultiSelect
+            v-model="hotelAmenitie"
+            :options="amenities"
+            optionLabel="label"
+            optionValue="label"
+            placeholder="Select Amenities"
+            class="w-full md:w-56"
+            multiple
+          />
         </div>
     </div>
 </div>

@@ -9,6 +9,6 @@ urlpatterns = [
     path("list/", UserListView.as_view(), name="user-list"),
     path("details/", UserDetails.as_view(), name="user-details"),
     path("profiles/list/", ProfileListView.as_view(), name="profile-list"),
-    path("profiles/<int:pk>/",ProfileUpdateRetreiveView.as_view(),name="profile-details"),
+    path("profiles/update-details/",ProfileUpdateRetreiveView.as_view(),name="profile-details"),
     path('blacklist/', TokenBlacklistView.as_view(), name='blacklist'),
 ]
