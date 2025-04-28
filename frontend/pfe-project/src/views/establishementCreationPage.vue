@@ -337,6 +337,7 @@ onMounted(() => {
           optionValue="value"
           placeholder="Select a city"
           class="w-full"
+          filter
         />
         <Message v-if="errors.city" severity="error" class="mt-2">{{ errors.city[0] }}</Message>
       </div>
@@ -417,6 +418,7 @@ onMounted(() => {
             optionValue="value"
             placeholder="Select amenities"
             class="w-full"
+            filter
           />
           <Message v-if="errors.amenities" severity="error" class="mt-2">{{ errors.amenities[0] }}</Message>
         </div>
@@ -451,6 +453,7 @@ onMounted(() => {
             optionValue="value"
             placeholder="Select a cuisine"
             class="w-full"
+            filter
           />
           <Message v-if="errors.cuisine" severity="error" class="mt-2">{{ errors.cuisine[0] }}</Message>
         </div>
