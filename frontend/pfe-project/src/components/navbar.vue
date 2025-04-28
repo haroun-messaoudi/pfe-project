@@ -14,6 +14,7 @@ import { useEstablishementStore } from '@/stores/establishement.js';
 import { onMounted } from 'vue';
 import { useSearchStore } from '@/stores/searchStore.js';
 import { MultiSelect } from 'primevue';
+import { useUserStore } from '@/stores/user.js';
 
 const searchStore = useSearchStore();
 const cities = [
@@ -112,13 +113,17 @@ const selectedCity = ref();
 const searchQuery = ref(''); // Declare searchQuery
 const cuisines = ref([]);
 const amenities = ref([]);
+const userStore = useUserStore();
 
-
+defineProps({
+  page: String
+})
 // to show and No show the sec-nevbar
 const secNavBar = ref(false);
 const toggleNavBar = () => {
   secNavBar.value = !secNavBar.value
 }
+
 onMounted(async () => {
   await establishementStore.fetchCuisines();
   await establishementStore.fetchAmenities();
@@ -161,7 +166,6 @@ const search = async () => {
   }
 };
 
-
 </script>
 
 <template>
@@ -169,15 +173,24 @@ const search = async () => {
     <!-- main navbar -->
     <div class="border-b border-gray-800 flex justify-around items-center">
         <!-- stay-bite logo -->
-        <img class="h-20 w-auto" src="@/assets/img/logo.png" />
+        
+        <RouterLink  to="/">
+          <img  class="h-20 w-auto" src="@/assets/img/logo.png" />
+          
+        </RouterLink>
+        
+        
         <!-- search bar -->
         <div class="flex  items-center">
-        <IconField>
-            <InputText v-model="searchQuery" placeholder="Search" size="large" />
-            <InputIcon class="pi pi-search cursor-pointer"  @click="search"/>
+        <IconField class="relative">
+            <InputText class="" v-model="searchQuery" placeholder="Search" size="large" />
+            <RouterLink class="absolute right-10 top-1/2 -translate-y-1/2 inline-flex items-center"
+             to="/searchResult">
+              <InputIcon class="pi pi-search cursor-pointer"  @click="search"/>
+            </RouterLink>
         </IconField>
         <!-- filter button -->
-        <Button @click="toggleNavBar" class="ml-5" label="filter" severity="info" />
+        <Button @click="toggleNavBar" class="ml-5" label="filter" severity="warn" />
         </div>
         <!-- buttons -->
         <div class="flex justify-between"> 
@@ -186,7 +199,7 @@ const search = async () => {
             </RouterLink>
         </div>
         <!-- profile button -->
-        <RouterLink to="/profile">
+        <RouterLink v-if="userStore.profileId" to="/profile">
         <Toolbar style="border-radius: 3rem; padding: 1rem 2rem 1rem 1rem">
             <template #end>
                 <div class="flex items-center gap-2">
@@ -195,6 +208,9 @@ const search = async () => {
                 </div>
             </template>
         </Toolbar>
+        </RouterLink>
+        <RouterLink v-else to="/login">
+          <Button label="Login" severity="warn" rounded />
         </RouterLink>
     </div>
 
@@ -205,12 +221,13 @@ const search = async () => {
         <div class="flex space-x-4">
         <Button
             label="Restaurant"
-            :severity="value === 'restaurant' ? 'primary' : 'secondary'"
+            :severity="value === 'restaurant' ? 'warn' : 'secondary'"
             @click="() => value = 'restaurant'"
+
         />
         <Button
             label="Hotel"
-            :severity="value === 'hotel' ? 'primary' : 'secondary'"
+            :severity="value === 'hotel' ? 'warn' : 'secondary'"
             @click="() => value = 'hotel'"
         />
         </div>
@@ -223,6 +240,7 @@ const search = async () => {
                 optionValue="name"
                 placeholder="Select a City"
                 class="w-full md:w-56"
+                filter
             />
         </div>
         <!-- if fitlered by restaurants -->
@@ -234,6 +252,7 @@ const search = async () => {
                 optionValue="label"
                 placeholder="Cuisines"
                 class="w-full md:w-56"
+                filter
             />  
         </div>
         <!-- If filtered by Hotels -->
@@ -245,7 +264,9 @@ const search = async () => {
             optionValue="label"
             placeholder="Select Amenities"
             class="w-full md:w-56"
+            filter
             multiple
+            
           />
         </div>
     </div>

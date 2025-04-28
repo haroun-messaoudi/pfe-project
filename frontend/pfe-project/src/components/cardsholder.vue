@@ -8,16 +8,19 @@ const props = defineProps({
   cardsInfo: {
     type: Array,  // This should be an array of hits (search results)
   },
+  title : {
+    type: String,
+    default: 'Best Restaurants',
+  },
 });
 console.log("hnaa",props.cardsInfo)
 </script>
 
 <template>
-  <section class="px-4 py-10">
+  <section class="px-1 py-10 bg-gray-100">
     <div class="container-xl lg:container m-auto">
-      <!-- big title -->
-      <h2 class="text-3xl font-bold mb-6 text-center">
-        Where to?
+      <h2 class="text-3xl font-midium mb-6 text-slate-800">
+        {{ props.title }}
       </h2>
       <!-- cards loop -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

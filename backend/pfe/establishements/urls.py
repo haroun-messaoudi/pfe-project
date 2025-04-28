@@ -26,5 +26,7 @@ urlpatterns = [
     path("search/", views.EstablishementSearchView.as_view(), name="establishement-search"),
     path("amenities/list/", views.AmenitiesListView.as_view(), name="hotel-search"),
     path("cuisines/list/", views.CuisineListView.as_view(), name="cuisine-list"),
+    path("best-restaurants/", views.BestRatedRestaurantsView.as_view(), name="best-restaurants"),
+    path("best-hotels/", views.BestRatedHotelsView.as_view(), name="best-hotels"),
 
 ]

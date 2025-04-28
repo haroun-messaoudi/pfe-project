@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'reservations',
     'reviews',
     'algoliasearch_django',
+
 ]
 
 MIDDLEWARE = [
@@ -176,6 +177,7 @@ ALGOLIA = {
     'AUTO_INDEXING':True,
 }
 
+# Specify the index you want to search (main index)
 
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
