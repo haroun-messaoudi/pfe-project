@@ -28,7 +28,6 @@ console.log(userStore.isAuthenticated)
 <template>
 <div>
   <navbar />
-  
-  <cardsholder :cardsInfo="searchStore.results" :title="'Best matches'"/>
+  <cardsholder :cardsInfo="searchStore.results" />
 </div>
 </template>

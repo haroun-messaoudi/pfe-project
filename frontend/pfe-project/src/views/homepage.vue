@@ -23,9 +23,15 @@ console.log(userStore.isAuthenticated)
 <template>
   <div>
     <navbar page="home" />
+<<<<<<< HEAD
     <h2 class="text-3xl font-bold mb-6 text-center p-5">
         Where to?
     </h2>
+=======
+      <h2 class="text-3xl font-bold pb-6 text-center bg-gray-100">
+        Where to?
+      </h2>
+>>>>>>> c9a9d1a24a39fd60659b0c28d37cfe42479d2ec9
       <cardsholder :cardsInfo="topEstablishmentsStore.bestRestaurants.hits" :title="'Best Restaurants'" />
       <cardsholder :cardsInfo="topEstablishmentsStore.bestHotels.hits" :title="'Best Hotels'" />
   </div>

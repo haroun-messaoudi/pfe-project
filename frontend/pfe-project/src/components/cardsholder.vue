@@ -10,7 +10,6 @@ const props = defineProps({
   },
   title : {
     type: String,
-    default: 'Best Restaurants',
   },
 });
 console.log("hnaa",props.cardsInfo)

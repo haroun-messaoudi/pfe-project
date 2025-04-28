@@ -173,10 +173,8 @@ const search = async () => {
     <!-- main navbar -->
     <div class="border-b border-gray-800 flex justify-around items-center">
         <!-- stay-bite logo -->
-        
-        <RouterLink  to="/">
-          <img  class="h-20 w-auto" src="@/assets/img/logo.png" />
-          
+        <RouterLink to="/">
+          <img class="h-20 w-auto" src="@/assets/img/logo.png" />
         </RouterLink>
         
         
