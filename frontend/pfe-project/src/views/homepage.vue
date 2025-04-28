@@ -23,6 +23,9 @@ console.log(userStore.isAuthenticated)
 <template>
   <div>
     <navbar page="home" />
+      <h2 class="text-3xl font-bold pb-6 text-center bg-gray-100">
+        Where to?
+      </h2>
       <cardsholder :cardsInfo="topEstablishmentsStore.bestRestaurants.hits" :title="'Best Restaurants'" />
       <cardsholder :cardsInfo="topEstablishmentsStore.bestHotels.hits" :title="'Best Hotels'" />
   </div>

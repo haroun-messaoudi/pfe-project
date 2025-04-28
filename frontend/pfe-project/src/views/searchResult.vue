@@ -28,9 +28,6 @@ console.log(userStore.isAuthenticated)
 <template>
 <div>
   <navbar />
-  <h2 class="text-3xl font-bold mb-6 text-center">
-        Where to?
-  </h2>
   <cardsholder :cardsInfo="searchStore.results" />
 </div>
 </template>

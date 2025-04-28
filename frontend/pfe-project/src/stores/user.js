@@ -7,6 +7,8 @@ export const useUserStore = defineStore('user', {
     profileId: null,
     isAuthenticated: false,
     profileRole: "",
+    refreshToken: null,
+    acessToken: null,
   }),
   actions: {
     setProfileId(id) {
@@ -17,6 +19,12 @@ export const useUserStore = defineStore('user', {
     },
     setProfileRole(role) {
       this.profileRole = role
+    },
+    setAcessToken(token) {
+      this.acessToken = token
+    },
+    setRefreshToken(token) {
+      this.refreshToken = token
     },
     
     async login(username, password) {
@@ -29,8 +37,8 @@ export const useUserStore = defineStore('user', {
         const { access, refresh } = response.data
         
         // Store tokens
-        localStorage.setItem('accessToken', access)
-        localStorage.setItem('refreshToken', refresh)
+        this.acessToken = access
+        this.refreshToken = refresh
         console.log("in user "+access)
         // Immediately set auth header
         api.defaults.headers.common['Authorization'] = `Bearer ${access}`
@@ -57,30 +65,39 @@ export const useUserStore = defineStore('user', {
     
     async refreshAccessToken() {
       try {
-        const refreshToken = localStorage.getItem('refreshToken')
-        console.log(refreshToken)
+        const refreshToken = this.refreshToken // Use the store's state
         if (!refreshToken) throw new Error('No refresh token available')
-
+    
         const response = await axios.post('http://127.0.0.1:8000/api/accounts/token/refresh/', {
           refresh: refreshToken,
         })
-
+    
         const { access } = response.data
-        localStorage.setItem('accessToken', access)
+        this.setAcessToken(access) // Update the store's state
+        api.defaults.headers.common['Authorization'] = `Bearer ${access}` // Update Axios headers
         return access
       } catch (error) {
         console.error('Error refreshing access token:', error)
-        this.logout() // this is fine, just make sure no router logic inside
+        this.logout()
+        throw error
       }
     },
 
-    logout() {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
-      this.profileId = null
-      this.isAuthenticated = false
-
-      // Do NOT use useRouter() here. Handle redirection in the component.
+    async logout() {
+      try {
+        if (this.refreshToken) {
+          await api.post('accounts/blacklist/', {
+            refresh: this.refreshToken, // Use the store's state
+          })
+        }
+      } catch (error) {
+        console.error('Error during logout:', error)
+      } finally {
+        this.acessToken = null
+        this.refreshToken = null
+        this.profileId = null
+        this.isAuthenticated = false
+      }
     },
   },
   persist: true, // Enable persistence

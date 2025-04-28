@@ -173,13 +173,8 @@ const search = async () => {
     <!-- main navbar -->
     <div class="border-b border-gray-800 flex justify-around items-center">
         <!-- stay-bite logo -->
-         
-        <img v-if="page=='home'" class="h-20 w-auto" src="@/assets/img/logo.png" />
-        <RouterLink v-else to="/">
-          <div class="flex space-x-4 items-center  border-2 border-gray-500 p-3 rounded-lg">
-              <i class="pi pi-home"></i>
-              <p>Home Page</p>
-          </div>
+        <RouterLink to="/">
+          <img class="h-20 w-auto" src="@/assets/img/logo.png" />
         </RouterLink>
         <!-- search bar -->
         <div class="flex  items-center">
