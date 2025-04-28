@@ -2,6 +2,6 @@
 </script>
 
 <template>
-<p></p>
+<p>push</p>
     
 </template>
