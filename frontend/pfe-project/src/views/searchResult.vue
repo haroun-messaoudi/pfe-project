@@ -2,7 +2,7 @@
 // import { onMounted } from 'vue'
 // import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import cardsholder from '@/components/cardsHolder.vue';
+import cardsholder from '@/components/cardsholder.vue';
 import navbar from '@/components/navbar.vue';
 import { useSearchStore } from '@/stores/searchStore'
 // const router = useRouter()

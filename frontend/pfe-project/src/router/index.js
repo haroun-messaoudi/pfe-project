@@ -6,7 +6,9 @@ import LoginPage from '@/views/loginPage.vue'
 import RegistrationPage from '@/views/registrationPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import contactus from '@/views/contactus.vue'
-import profilepage from '@/views/profilePage.vue'
+import reservation from '@/views/reservation.vue'
+import detailsPage from '@/views/detailsPage.vue'
+import profilepage from '@/views/profilepage.vue'
 import SearchResult from '@/views/searchResult.vue'
 
 const router = createRouter({
@@ -49,6 +51,16 @@ const router = createRouter({
       path:'/profile',
       name:'profile',
       component:profilepage,
+    },
+    {
+      path:'/reservation',
+      name:'reservation',
+      component:reservation,
+    },
+    {
+      path:'/details-page',
+      name:'details-page',
+      component:detailsPage,
     },
     {
       path:'/searchResult',

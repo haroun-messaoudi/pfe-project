@@ -6,6 +6,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Toolbar from 'primevue/toolbar';
 import Avatar from 'primevue/avatar';
+
 import Select from 'primevue/select';
 import { ref } from 'vue';
 // routerlink
@@ -192,7 +193,8 @@ const search = async () => {
         </div>
         <!-- buttons -->
         <div class="flex justify-between"> 
-            <Button label="My Reservation" text plain />
+            <RouterLink to="/reservation"> <Button label="My Reservation" text plain />
+            </RouterLink>
             <RouterLink to="/contactUs"> <Button label="Contact Us" text plain />
             </RouterLink>
         </div>
@@ -253,7 +255,7 @@ const search = async () => {
                 filter
             />  
         </div>
-        <!-- If filtered by Hotels -->
+        <!-- if fitlered by Hotels -->     
         <div v-else class="card flex justify-center">
           <MultiSelect
             v-model="hotelAmenitie"
