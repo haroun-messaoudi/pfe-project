@@ -1,0 +1,10 @@
+#tailwind:
+
+-D tailwindcss@latest postcss@latest autoprefixer@latest
+tailwindcss init -p 
+
+#prime NG:
+
+install primeicons
+install primevue
+npm install primevue @primeuix/themes
