@@ -1,13 +1,14 @@
 
 import EstablishementOwnerDetails from '@/views/establishementOwnerDetails.vue'
 import EstablishementCreationPage from '@/views/establishementCreationPage.vue'
-import HomePage from '@/views/homepage.vue'
+import HomePage from '@/views/homePage.vue'
 import LoginPage from '@/views/loginPage.vue'
 import RegistrationPage from '@/views/registrationPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import contactus from '@/views/contactus.vue'
 import profilepage from '@/views/profilepage.vue'
 import reservation from '@/views/reservation.vue'
+import detailsPage from '@/views/detailsPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -54,6 +55,11 @@ const router = createRouter({
       path:'/reservation',
       name:'reservation',
       component:reservation,
+    },
+    {
+      path:'/details-page',
+      name:'details-page',
+      component:detailsPage,
     },
   ],
 })

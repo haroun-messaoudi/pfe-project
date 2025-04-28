@@ -6,7 +6,7 @@ import myReviews from '@/components/myReviews.vue'
 
 <template>
     <div>
-        <profilenav :buttonText="'Edit Profile'"/>
+        <profilenav :buttonText="'log out'"/>
         <profiledetails />
         <myReviews />
     </div>
