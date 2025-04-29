@@ -2,6 +2,7 @@
 import Card from 'primevue/card';
 import Rating from 'primevue/rating';
 import restImg from '@/assets/img/rest.webp';
+import { warn } from 'vue';
 
 const props = defineProps({
   cardInfo: {
