@@ -9,7 +9,8 @@ import Dialog from 'primevue/dialog'
 import Textarea from 'primevue/textarea'
 import qstHolder from './qstHolder.vue'
 import restaurantExra from './restaurantExra.vue'
-
+import SplitButton from 'primevue/splitbutton'
+import { useRouter } from 'vue-router'
 
 const menuItems = [
   {
@@ -89,8 +90,22 @@ const responsiveOptions = ref([
     numVisible: 1
   }
 ])
-</script>
 
+// SplitButton items
+const reservationItems = [
+  {
+    label: 'Make a Quick Reservation',
+    icon: 'pi pi-clock',
+    command: () => {
+      document.querySelector('#quick-reservation-link')?.click()
+    }
+  }
+]
+
+function goToReservation() {
+  document.querySelector('#main-reservation-link')?.click()
+}
+</script>
 
 <template>
   <div class="flex gap-4 bg-orange-100 p-5 m-5 border-0 rounded-lg">
@@ -165,7 +180,13 @@ const responsiveOptions = ref([
       </Panel>
       <div class="flex gap-10 py-5 justify-center">
         <Button label="Add A Review" severity="success" raised @click="reviewDialogVisible = true" />
-        <Button label="Make a reservation" severity="info" raised />
+        
+        <!-- SplitButton -->
+        <SplitButton label="Make a Reservation" :model="reservationItems" raised severity="info" @click="goToReservation" />
+
+        <!-- Hidden router-links triggered by JS -->
+        <router-link to="/makeReservation" id="main-reservation-link" class="hidden" />
+        <router-link to="/quick-reservation" id="quick-reservation-link" class="hidden" />
       </div>
     </div>
   </div>
@@ -189,5 +210,3 @@ const responsiveOptions = ref([
     </template>
   </Dialog>
 </template>
-
-

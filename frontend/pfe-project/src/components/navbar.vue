@@ -193,7 +193,7 @@ const search = async () => {
         </div>
         <!-- buttons -->
         <div class="flex justify-between"> 
-            <RouterLink to="/reservation"> <Button label="My Reservation" text plain />
+            <RouterLink to="/myReservation"> <Button label="My Reservation" text plain />
             </RouterLink>
             <RouterLink to="/contactUs"> <Button label="Contact Us" text plain />
             </RouterLink>

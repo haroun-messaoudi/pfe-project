@@ -8,6 +8,8 @@
   
       <div v-for="(review, index) in reviews" :key="index">
         <SingleReview
+          :reviewerName="review.reviewerName"
+          :reviewerLastName="review.reviewerLastName"
           :rating="review.rating"
           :comment="review.comment"
           :reviewDate="review.date"
