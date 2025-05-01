@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'reservations',
     'reviews',
     'algoliasearch_django',
+    'stats',
 
 ]
 
@@ -174,7 +175,7 @@ SIMPLE_JWT = {
 ALGOLIA = {
    'APPLICATION_ID': os.getenv('ALGOLIA_APP_ID'),
     'API_KEY': os.getenv('ALGOLIA_API_KEY'),
-    'AUTO_INDEXING':True,
+    'AUTO_INDEXING':False,
 }
 
 # Specify the index you want to search (main index)
@@ -185,5 +186,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://localhost:5174"
+    "http://localhost:5174",
+    'http://127.0.0.1:8000',
 ]
