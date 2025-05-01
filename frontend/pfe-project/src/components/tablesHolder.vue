@@ -16,7 +16,7 @@ console.log("hnaa",props.cardsInfo)
 </script>
 
 <template>
-  <section class="px-1 py-10 bg-gray-100">
+  <section class="px-1 py-10 bg-gray-100 p-5 m-5 border-0 rounded-lg">
     <div class="container-xl lg:container m-auto">
       <h2 class="text-3xl font-midium mb-6 text-slate-800">
         {{ props.title }}
