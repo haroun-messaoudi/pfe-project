@@ -14,6 +14,7 @@ import makeReservation from '@/views/makeReservation.vue'
 import OwnerPage from '@/views/ownerPage.vue'
 import OuReservations from '@/views/ouReservations.vue'
 import OuReviews from '@/views/ouReviews.vue'
+import NotFoundPage from '@/views/notFoundPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -93,6 +94,11 @@ const router = createRouter({
       path:'/makeReservation',
       name:'makeReservation',
       component:makeReservation
+    },
+    {
+      path:'/:catchAll(.*)',
+      name:'Not-Found-Page',
+      component:NotFoundPage
     }
   ],
 })
