@@ -3,6 +3,31 @@ import { useRoute } from 'vue-router';
 import { useSearchStore } from '@/stores/searchStore';
 import profilenav from '@/components/profilenav.vue';
 import establishementCard from '@/components/establishementCard.vue';
+import reviewsHolder from '@/components/reviewsHolder.vue';
+const reviews = [
+  { 
+    reviewerName:"tahar",
+    reviewerLastName:"irki",
+    rating: 5,
+    comment: "The food was incredible, especially the pasta. Highly recommended!",
+    date: "2025-04-25"
+  },
+  {
+    reviewerName:"haroun",
+    reviewerLastName:"messaoudi",
+    rating: 4,
+    comment: "Nice ambiance and quick service. A bit pricey though.",
+    date: "2025-04-22"
+  },
+  {
+    reviewerName:"rafik",
+    reviewerLastName:"benboaicha",
+    rating: 3,
+    comment: "Food was okay, service could be better.",
+    date: "2025-04-18"
+  }
+]
+
 import { useTopEstablishmentsStore } from '@/stores/topestablishments';
 import { computed } from 'vue';
 
@@ -10,6 +35,7 @@ import { computed } from 'vue';
 const route = useRoute();
 const searchStore = useSearchStore();
 const topEstablishmentsStore = useTopEstablishmentsStore()
+
 
 // Get the establishment data based on the route's id
 const establishment = computed(() => {
@@ -20,6 +46,7 @@ const establishment = computed(() => {
     topEstablishmentsStore.bestRestaurants.hits?.find((item) => item.objectID === id)
   );
 });
+console.log(establishment.value)
 </script>
 
 <template>
@@ -43,7 +70,10 @@ const establishment = computed(() => {
           { itemImageSrc: '/src/assets/img/hrn.png', thumbnailImageSrc: '/src/assets/img/hrn.png', alt: 'Image 2' }
         ]"
         :value="establishment.average_rating"
+        :menuItems="establishment?.restaurant_menu_items"
+        :cuisineType="establishment?.restaurant_cuisine"
       />
+      <reviewsHolder :reviews="reviews" />
     </div>
     <!-- <div v-else>
       <p>Loading establishment details...</p>

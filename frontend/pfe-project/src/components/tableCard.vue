@@ -1,12 +1,11 @@
 <script setup>
 import Card from 'primevue/card';
-import Rating from 'primevue/rating';
+
 import restImg from '@/assets/img/rest.webp';
-import { RouterLink } from 'vue-router';
 import { warn } from 'vue';
 
 const props = defineProps({
-  cardInfo: {
+  tableInfo: {
     type: Object,
     required: true
   }
@@ -14,34 +13,32 @@ const props = defineProps({
 </script>
 
 <template>
-  <RouterLink :to="`/details/${cardInfo.objectID}`">
   <!-- Card fills its grid column using w-full -->
   <Card class="bg-orange-50 p-4 w-full overflow-hidden">
     <!-- Header: Establishment Image -->
     <template #header>
       <img
-        :src="props.cardInfo.image || restImg"
+        :src="props.tableInfo.image || restImg"
         alt="Establishment image"
         class="w-full h-48 object-cover mb-4"
       />
     </template>
 
-    <!-- Title: Name -->
+    <!-- Title: capacity -->
     <template #title>
-      <h3 class="text-xl font-semibold">{{ props.cardInfo.name }}</h3>
+      <h3 class="text-xl font-semibold">{{ props.tableInfo.capacity }}</h3>
     </template>
 
-    <!-- Subtitle: Type • City -->
+    <!-- Subtitle: totaltables -->
     <template #subtitle>
-      <span class="capitalize">{{ props.cardInfo.type }}</span>
+      <span class="capitalize">{{ props.tableInfo.totelTables }}</span>
       <span class="mx-1">•</span>
-      <span>{{ props.cardInfo.city }}</span>
     </template>
 
     <!-- Content: Description -->
     <template #content>
       <p class="text-gray-700 mb-4">
-        {{ props.cardInfo.description || 'No description available.' }}
+        {{ props.tableInfo.description || 'No description available.' }}
       </p>
     </template>
 
@@ -49,17 +46,10 @@ const props = defineProps({
     <template #footer>
       <div class="flex flex-col">
         <small class="text-sm text-gray-600 mb-2">
-          📍 {{ props.cardInfo.location }}
+          📍 {{ props.tableInfo.location }}
         </small>
-        <Rating
-          :modelValue="Number(props.cardInfo.average_rating)"
-          readonly
-          :stars="5"
-          :cancel="false"
-          :style="{'--p-rating-icon-active-color': '#E97451'}"
-        />
+        
       </div>
     </template>
   </Card>
-  </RouterLink>
 </template>

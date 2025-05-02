@@ -3,24 +3,34 @@ import { ref, defineProps } from 'vue'
 import Rating from 'primevue/rating'
 import Galleria from 'primevue/galleria'
 import HotelExtra from './hotelExtra.vue'
-import Card from './card.vue'
 import Panel from 'primevue/panel'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Textarea from 'primevue/textarea'
-import qstHolder from './qstHolder.vue'
 import restaurantExra from './restaurantExra.vue'
 import SplitButton from 'primevue/splitbutton'
 import { useRouter } from 'vue-router'
 
-
+const menuItems = [
+  {
+    name: "Margherita Pizza",
+    description: "Classic pizza with tomatoes, mozzarella, and fresh basil.",
+    price: 12
+  },
+  {
+    name: "Pasta Carbonara",
+    description: "Pasta with creamy sauce, pancetta, and parmesan.",
+    price: 15
+  },
+  {
+    name: "Tiramisu",
+    description: "Coffee-flavored Italian dessert with mascarpone cream.",
+    price: 8
+  }
+]
 // ✅ Props preserved exactly with required fields
 const props = defineProps({
   name: {
-    type: String,
-    required: true
-  },
-  city: {
     type: String,
     required: true
   },
@@ -47,32 +57,6 @@ const props = defineProps({
   value: {
     type: Number,
     required: true
-  },
-  amenities: {
-    type: Array,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  checkin: {
-    type: String,
-    required: true
-  },
-  checkout: {
-    type: String,
-    required: true
-  },
-  stars: {
-    type: Number,
-    required: true
-  },
-  menuItems: {
-    type: Array,
-  },
-  cuisineType:{
-    type: String,
   }
 })
 
@@ -80,7 +64,7 @@ const props = defineProps({
 const reviewDialogVisible = ref(false)
 const reviewText = ref('')
 const reviewRating = ref(0)
-console.log("menu",props.menuItems,"cujsine",props.cuisineType)
+
 function submitReview() {
   console.log('Review Submitted:')
   console.log('Rating:', reviewRating.value)
@@ -106,9 +90,6 @@ const responsiveOptions = ref([
   }
 ])
 
-console.log('amenities', props.amenities)
-
-
 // SplitButton items
 const reservationItems = [
   {
@@ -128,7 +109,7 @@ function goToReservation() {
 <template>
   <div class="flex gap-4 bg-orange-100 p-5 m-5 border-0 rounded-lg">
     <!-- Carousel Section using Galleria -->
-    <div class="w-96">
+    <div class="flex-none w-96">
       <Galleria
         :value="props.images"
         :responsiveOptions="responsiveOptions"
@@ -145,7 +126,7 @@ function goToReservation() {
             class="w-full h-96 object-cover rounded-lg"
           />
         </template>
-        <template #thumbnail="slotProps" class="p-2" >
+        <template class="p-2" #thumbnail="slotProps">
           <img
             :src="slotProps.item.thumbnailImageSrc"
             :alt="slotProps.item.alt"
@@ -156,7 +137,7 @@ function goToReservation() {
     </div>
 
     <!-- Establishment Info Section -->
-    <div class="px-10">
+    <div class="flex-none px-10">
       <h1 class="font-serif font-bold text-4xl mb-2">{{ props.name }}</h1>
       <div class="mb-2">{{ props.type }}</div>
       <div class="flex mb-2">
@@ -180,54 +161,27 @@ function goToReservation() {
           :style="{ '--p-rating-icon-size': '25px', '--p-rating-icon-active-color': '#E97451' }"
         />
       </div>
-
-      <HotelExtra v-if="props.type == 'hotel'"
-        :amenities=props.amenities
-        :checkInTime="props.checkin"
-        :checkOutTime="props.checkout"
-        :stars="props.stars"
-      />
-      <restaurantExra v-if="props.type == 'restaurant'"
-      :menu="props.menuItems"
-      :cuisineType="props.cuisineType"
+      <restaurantExra
+      :menu="menuItems"
+      cuisineType="Italian"
       />
     </div>
 
     <!-- Description and Buttons -->
-    <div class="flex flex-col flex-1">
-      <Panel class="h-5/6 w-full flex-none min-w-full" header="description">
+    <div class="flex flex-col">
+      <Panel class="h-5/6 w-full flex-none" header="description">
         <p class="m-0">
-          {{ props.description }}
+          The Panoramic Hotel is a modern, elegant 4-star hotel overlooking the sea, perfect for a romantic, charming vacation, in the enchanting setting of Taormina and the Ionian Sea.
+          The rooms at the Panoramic Hotel are new, well-lit and inviting. Our reception staff will be happy to help you during your stay in Taormina, suggesting itineraries, guided visits and some good restaurants in the historic centre.
+          While you enjoy a cocktail by the swimming pool on the rooftop terrace, you will be stunned by the breathtaking view of the bay of Isola Bella. Here, during your summer stays, our bar serves traditional Sicilian dishes, snacks and salads.
+          At the end of a stairway across from the hotel, the white pebbles on the beach of Isola Bella await you as well as beach facilities with lounge chairs and umbrellas and areas with free access to the pristine clear sea that becomes deep just a few metres from the shore.
         </p>
       </Panel>
       <div class="flex gap-10 py-5 justify-center">
-        <Button label="Add A Review" severity="success" raised @click="reviewDialogVisible = true" />
-        
-        <!-- SplitButton -->
-        <SplitButton label="Make a Reservation" :model="reservationItems" raised severity="info" @click="goToReservation" />
-
-        <!-- Hidden router-links triggered by JS -->
-        <router-link to="/makeReservation" id="main-reservation-link" class="hidden" />
-        <router-link to="/quick-reservation" id="quick-reservation-link" class="hidden" />
+        <RouterLink to="/ownerPage/establishement">
+        <Button label="update My Establishement" severity="warn" raised/>
+        </RouterLink>
       </div>
     </div>
-  <!-- Review Dialog -->
-  <Dialog v-model:visible="reviewDialogVisible" modal header="Add Your Review" :style="{ width: '30rem' }">
-    <template #header>
-      <div class="inline-flex items-center justify-center gap-2">
-        <i class="pi pi-comment text-xl"></i>
-        <span class="font-bold">Leave a Review</span>
-      </div>
-    </template>
-
-    <span class="text-surface-500 dark:text-surface-400 block mb-4">Tell us what you think about this place.</span>
-    <div>
-      <qstHolder />
-    </div>
-    <template #footer>
-      <Button label="Cancel" text severity="secondary" @click="reviewDialogVisible = false" />
-      <Button label="Submit" severity="success" @click="submitReview" />
-    </template>
-  </Dialog>
   </div>
 </template>

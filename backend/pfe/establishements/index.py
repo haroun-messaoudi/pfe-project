@@ -59,8 +59,14 @@ class EstablishementIndex(AlgoliaIndex):
         if hasattr(instance, 'restaurant'):
             data.update({
                 'restaurant_cuisine': instance.restaurant.cuisine.name if instance.restaurant.cuisine else None,
-                'restaurant_menu_items': [menu_item.name for menu_item in instance.restaurant.menu_items.all()],
+                'restaurant_menu_items': [
+                        {
+                            'name': menu_item.name,
+                            'description': menu_item.description,
+                            'price': menu_item.price
+                        }
+                        for menu_item in instance.restaurant.menu_items.all()
+                    ],
             })
-
         return data
     

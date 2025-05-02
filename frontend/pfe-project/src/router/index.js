@@ -10,6 +10,11 @@ import reservation from '@/views/reservation.vue'
 import detailsPage from '@/views/detailsPage.vue'
 import profilepage from '@/views/profilepage.vue'
 import SearchResult from '@/views/searchResult.vue'
+import makeReservation from '@/views/makeReservation.vue'
+import OwnerPage from '@/views/ownerPage.vue'
+import OuReservations from '@/views/ouReservations.vue'
+import OuReviews from '@/views/ouReviews.vue'
+import NotFoundPage from '@/views/notFoundPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,9 +42,27 @@ const router = createRouter({
       component: HomePage
     },
     {
-      path: '/owner/establishement',
+      path: '/ownerPage',
+      name: 'ownerPage',
+      component: OwnerPage,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/ownerPage/establishement',
       name: 'OwnerEstablishement',
       component: EstablishementOwnerDetails,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/ownerPage/ouReservations',
+      name: 'ouReservations',
+      component:OuReservations,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/ownerPage/ouReviews',
+      name: 'ouReviews',
+      component: OuReviews,
       meta: { requiresAuth: true },
     },
     {
@@ -53,8 +76,8 @@ const router = createRouter({
       component:profilepage,
     },
     {
-      path:'/reservation',
-      name:'reservation',
+      path:'/myReservation',
+      name:'myReservation',
       component:reservation,
     },
     {
@@ -67,6 +90,16 @@ const router = createRouter({
       path:'/searchResult',
       name:'searchResult',
       component:SearchResult
+    },
+    {
+      path:'/makeReservation',
+      name:'makeReservation',
+      component:makeReservation
+    },
+    {
+      path:'/:catchAll(.*)',
+      name:'Not-Found-Page',
+      component:NotFoundPage
     }
   ],
 })
