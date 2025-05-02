@@ -286,7 +286,8 @@ class BestRatedHotelsView(APIView):
                 "filters": "type:hotel",  # Filter for hotels
                 "hitsPerPage": 1000,  # Retrieve a large number of results (adjust as needed)
                 "attributesToRetrieve": [
-                    "objectID", "name", "location", "type", "average_rating", "city",
+                    "objectID", "name", "location", "type", "average_rating", "city","email",
+                    "phone_number",
                     "description", "hotel_stars", "hotel_amenities", "hotel_check_in_time", "hotel_check_out_time"
                 ],
                 "facets": "*",  # Retrieve all facets
@@ -318,7 +319,8 @@ class BestRatedRestaurantsView(APIView):
                 "filters": "type:restaurant",  # Filter for restaurants
                 "hitsPerPage": 1000,  # Retrieve a large number of results (adjust as needed)
                 "attributesToRetrieve": [
-                    "objectID", "name", "location", "type", "average_rating", "city",
+                    "objectID", "name", "location", "type", "average_rating", "city","email",
+                    "phone_number",
                     "description", "restaurant_cuisine", "restaurant_menu_items"
                 ],
                 "facets": "*",  # Retrieve all facets

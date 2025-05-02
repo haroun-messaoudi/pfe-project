@@ -3,10 +3,15 @@ import Rating from 'primevue/rating'
 import Galleria from 'primevue/galleria'
 import HotelExtra from './hotelExtra.vue'
 import { defineProps, ref } from 'vue'
+import Card from './card.vue'
 
 // Props for the restaurant details
 const props = defineProps({
   name: {
+    type: String,
+    required: true
+  },
+  city: {
     type: String,
     required: true
   },
@@ -33,6 +38,26 @@ const props = defineProps({
   value: {
     type: Number,
     required: true
+  },
+  amenities: {
+    type: Array,
+    required: true
+  },
+  description: {
+    type: String,
+    required: true
+  },
+  checkin: {
+    type: String,
+    required: true
+  },
+  checkout: {
+    type: String,
+    required: true
+  },
+  stars: {
+    type: Number,
+    required: true
   }
 })
 
@@ -46,6 +71,10 @@ const responsiveOptions = ref([
     numVisible: 1
   }
 ])
+
+console.log('amenities', props.amenities)
+
+
 </script>
 
 <template>
@@ -68,7 +97,7 @@ const responsiveOptions = ref([
             class="w-full h-96 object-cover rounded-lg"
           />
         </template>
-        <template class="p-2" #thumbnail="slotProps">
+        <template #thumbnail="slotProps" class="p-2" >
           <img
             :src="slotProps.item.thumbnailImageSrc"
             :alt="slotProps.item.alt"
@@ -105,10 +134,10 @@ const responsiveOptions = ref([
       </div>
 
       <HotelExtra
-        :amenities="['Free WiFi', 'Swimming Pool', 'Parking', 'Gym', 'kurva', 'blyat']"
-        checkInTime="14:00"
-        checkOutTime="12:00"
-        :stars="4"
+        :amenities=props.amenities
+        :checkInTime="props.checkin"
+        :checkOutTime="props.checkout"
+        :stars="props.stars"
       />
     </div>
   </div>

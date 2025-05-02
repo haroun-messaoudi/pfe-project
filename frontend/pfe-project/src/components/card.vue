@@ -2,6 +2,7 @@
 import Card from 'primevue/card';
 import Rating from 'primevue/rating';
 import restImg from '@/assets/img/rest.webp';
+import { RouterLink } from 'vue-router';
 import { warn } from 'vue';
 
 const props = defineProps({
@@ -13,6 +14,7 @@ const props = defineProps({
 </script>
 
 <template>
+  <RouterLink :to="`/details/${cardInfo.objectID}`">
   <!-- Card fills its grid column using w-full -->
   <Card class="bg-orange-50 p-4 w-full overflow-hidden">
     <!-- Header: Establishment Image -->
@@ -58,4 +60,5 @@ const props = defineProps({
       </div>
     </template>
   </Card>
+  </RouterLink>
 </template>

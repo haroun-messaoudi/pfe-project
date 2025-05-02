@@ -106,7 +106,7 @@ const cities = [
   "Zelfana", "Zemala", "Zemoura", "Zéralda", "Zeribet El Oued", "Zerouala", "Zighoud Youcef",
   "Zitouna", "Zriba"
 ].map(city => ({ name: city }));
-const value = ref('restaurant');
+const value = ref('');
 const establishementStore = useEstablishementStore();
 const hotelAmenitie = ref();
 const restaurant_cuisine = ref();

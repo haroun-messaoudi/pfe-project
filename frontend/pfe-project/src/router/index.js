@@ -58,9 +58,10 @@ const router = createRouter({
       component:reservation,
     },
     {
-      path:'/details-page',
+      path:'/details/:id',
       name:'details-page',
       component:detailsPage,
+      props: true,
     },
     {
       path:'/searchResult',

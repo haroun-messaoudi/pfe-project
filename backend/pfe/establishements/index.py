@@ -39,6 +39,7 @@ class EstablishementIndex(AlgoliaIndex):
             'average_rating': float(instance.average_rating) if instance.average_rating else None,
             'city': instance.city,
             'description': instance.description,
+            'email': instance.email,
         }
 
         # Handle phone number if exists
