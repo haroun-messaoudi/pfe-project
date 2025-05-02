@@ -175,7 +175,7 @@ SIMPLE_JWT = {
 ALGOLIA = {
    'APPLICATION_ID': os.getenv('ALGOLIA_APP_ID'),
     'API_KEY': os.getenv('ALGOLIA_API_KEY'),
-    'AUTO_INDEXING':False,
+    'AUTO_INDEXING':True,
 }
 
 # Specify the index you want to search (main index)

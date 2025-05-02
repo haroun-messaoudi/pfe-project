@@ -26,7 +26,7 @@ class ListRestaurantReservations(generics.ListAPIView):
         return RestaurantReservation.objects.filter(restaurant=restaurant)
 
 
-class AddHotelRes(generics.CreateAPIView):
+class AddHotelReservation(generics.CreateAPIView):
     serializer_class   = HotelReservationSerializer
     permission_classes = [permissions.IsAuthenticated, IsClient]
 
@@ -42,7 +42,7 @@ class AddHotelRes(generics.CreateAPIView):
         serializer.save(hotel=hotel, guest=guest)
 
 
-class AddRestaurantRes(generics.CreateAPIView):
+class AddRestaurantReservation(generics.CreateAPIView):
     serializer_class   = RestaurantReservationSerializer
     permission_classes = [permissions.IsAuthenticated, IsClient]
 
