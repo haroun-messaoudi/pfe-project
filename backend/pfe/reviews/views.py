@@ -31,6 +31,16 @@ class AddReviewView(generics.CreateAPIView):
         return context
 
 
+class EstablishmentReviewsView(generics.ListAPIView):
+    serializer_class = ListReviewSerializer
+    permission_classes = [IsAuthenticated]
+    queryset = Review.objects.all()
+
+    def get_queryset(self):
+        establishment_id = self.kwargs.get('establishement_id')
+        return Review.objects.filter(establishement_id=establishment_id)
+
+
 class ReviewListView(generics.ListAPIView):
     serializer_class = ListReviewSerializer
     permission_classes = [IsAuthenticated]

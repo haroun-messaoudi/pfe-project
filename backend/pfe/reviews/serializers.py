@@ -21,12 +21,20 @@ class ReviewAnswerSerializer(serializers.ModelSerializer):
 
 
 class ListReviewSerializer(serializers.ModelSerializer):
+    answers = ReviewAnswerSerializer(many=True, read_only=True)
+    date_posted = serializers.SerializerMethodField()
+    profile = serializers.SerializerMethodField()
     class Meta:
         model = Review
         fields = ['id', 'title', 'content', 'answers', 'date_posted', 'profile', 'establishement', 'rating']
         read_only_fields = ['date_posted', 'profile', 'establishement', 'rating']
         
-    
+    def get_profile(self, obj):
+        first_name = obj.profile.first_name or ""
+        last_name = obj.profile.last_name or ""
+        return f"{first_name} {last_name}".strip()
+    def get_date_posted(self, obj):
+        return obj.date_posted.strftime('%Y-%m-%d')
 
 class ReviewSerializer(serializers.ModelSerializer):
     answers = ReviewAnswerSerializer(many=True)

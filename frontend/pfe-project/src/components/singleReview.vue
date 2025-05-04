@@ -25,7 +25,7 @@ const props = defineProps({
 
 <template>
     <div class="bg-white p-4 rounded-lg shadow-md mb-4">
-      <p class="font-bold font-serif">{{ props.reviewerName }} - {{ props.reviewerLastName }}</p>
+      <p class="font-bold font-serif">{{ props.reviewerName }}</p>
       <div class="flex items-center mb-2">
         <div class="flex">
           <svg

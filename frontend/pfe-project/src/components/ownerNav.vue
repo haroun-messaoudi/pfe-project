@@ -40,7 +40,7 @@ defineProps({
     <!-- main navbar -->
     <div class="border-b border-gray-800 flex justify-between items-center px-5">
         <!-- stay-bite logo -->
-        <RouterLink to="/ownerPage">
+        <RouterLink to="/">
           <img class="h-20 w-auto" src="@/assets/img/logo.png" />
         </RouterLink>
         <!-- buttons -->

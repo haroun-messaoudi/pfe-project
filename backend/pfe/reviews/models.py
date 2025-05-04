@@ -5,7 +5,7 @@ from django.core.validators import MinValueValidator,MaxValueValidator
 
 
 class Review(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, null=True, blank=True)
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
     profile = models.ForeignKey("accounts.Profile", on_delete=models.CASCADE)
@@ -27,7 +27,7 @@ class Review(models.Model):
         self.establishement.get_average_rating()
 
     def __str__(self):
-        return self.title
+        return self.profile.user.username + " - " + self.establishement.name + " - " + str(self.rating) + " - " + str(self.date_posted)
 
 
 class ReviewQuestion(models.Model):

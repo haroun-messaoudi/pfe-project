@@ -15,6 +15,8 @@ import OwnerPage from '@/views/ownerPage.vue'
 import OuReservations from '@/views/ouReservations.vue'
 import OuReviews from '@/views/ouReviews.vue'
 import NotFoundPage from '@/views/notFoundPage.vue'
+import { useUserStore } from '@/stores/user'
+import { defineAsyncComponent } from 'vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,14 +41,26 @@ const router = createRouter({
     {
       path: '/',
       name: 'Home',
-      component: HomePage
+      component: () => {
+        const userStore = useUserStore();
+  
+        // Determine which component to load
+        let componentName = 'DefaultHomePage';
+        if (userStore.profileRole === 'owner') {
+          componentName = 'ownerPage';
+        } else if (userStore.profileRole === 'client') {
+          componentName = 'homepage';
+        }
+  
+        return defineAsyncComponent(() => import(`@/views/${componentName}.vue`));
+      },
     },
-    {
-      path: '/ownerPage',
-      name: 'ownerPage',
-      component: OwnerPage,
-      meta: { requiresAuth: true },
-    },
+    //{
+    //   path: '/ownerPage',
+    //   name: 'ownerPage',
+    //   component: OwnerPage,
+    //   meta: { requiresAuth: true },
+    // },
     {
       path: '/ownerPage/establishement',
       name: 'OwnerEstablishement',

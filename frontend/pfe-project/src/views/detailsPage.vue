@@ -4,38 +4,51 @@ import { useSearchStore } from '@/stores/searchStore';
 import profilenav from '@/components/profilenav.vue';
 import establishementCard from '@/components/establishementCard.vue';
 import reviewsHolder from '@/components/reviewsHolder.vue';
-const reviews = [
-  { 
-    reviewerName:"tahar",
-    reviewerLastName:"irki",
-    rating: 5,
-    comment: "The food was incredible, especially the pasta. Highly recommended!",
-    date: "2025-04-25"
-  },
-  {
-    reviewerName:"haroun",
-    reviewerLastName:"messaoudi",
-    rating: 4,
-    comment: "Nice ambiance and quick service. A bit pricey though.",
-    date: "2025-04-22"
-  },
-  {
-    reviewerName:"rafik",
-    reviewerLastName:"benboaicha",
-    rating: 3,
-    comment: "Food was okay, service could be better.",
-    date: "2025-04-18"
-  }
-]
+import api from '@/axios'
+import { ref } from 'vue';
+// const reviews = [
+//   { 
+//     reviewerName:"tahar",
+//     reviewerLastName:"irki",
+//     rating: 5,
+//     comment: "The food was incredible, especially the pasta. Highly recommended!",
+//     date: "2025-04-25"
+//   },
+//   {
+//     reviewerName:"haroun",
+//     reviewerLastName:"messaoudi",
+//     rating: 4,
+//     comment: "Nice ambiance and quick service. A bit pricey though.",
+//     date: "2025-04-22"
+//   },
+//   {
+//     reviewerName:"rafik",
+//     reviewerLastName:"benboaicha",
+//     rating: 3,
+//     comment: "Food was okay, service could be better.",
+//     date: "2025-04-18"
+//   }
+// ]
 
 import { useTopEstablishmentsStore } from '@/stores/topestablishments';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 
 // Access the route and search store
+
 const route = useRoute();
 const searchStore = useSearchStore();
 const topEstablishmentsStore = useTopEstablishmentsStore()
-
+const reviews = ref([]);
+const fetchReviews = async()=>{
+  try {
+    const response = await api.get('/reviews/establishment/' + route.params.id);
+    const data = await response.data;
+    reviews.value.push(...data)
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    return [];
+  }
+}
 
 // Get the establishment data based on the route's id
 const establishment = computed(() => {
@@ -47,6 +60,14 @@ const establishment = computed(() => {
   );
 });
 console.log(establishment.value)
+onMounted(async () => {
+  // Fetch reviews when the component is mounted
+  await fetchReviews();
+  console.log(reviews)
+  // Set the fetched reviews to a reactive property or state
+  // For example, you can use a ref or reactive object to store the reviews
+  // this.reviews = reviews;
+});
 </script>
 
 <template>

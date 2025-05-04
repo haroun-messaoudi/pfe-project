@@ -109,7 +109,7 @@ function goToReservation() {
 <template>
   <div class="flex gap-4 bg-orange-100 p-5 m-5 border-0 rounded-lg">
     <!-- Carousel Section using Galleria -->
-    <div class="flex-none w-96">
+    <div class="w-96">
       <Galleria
         :value="props.images"
         :responsiveOptions="responsiveOptions"
@@ -137,7 +137,7 @@ function goToReservation() {
     </div>
 
     <!-- Establishment Info Section -->
-    <div class="flex-none px-10">
+    <div class="px-10">
       <h1 class="font-serif font-bold text-4xl mb-2">{{ props.name }}</h1>
       <div class="mb-2">{{ props.type }}</div>
       <div class="flex mb-2">
@@ -168,7 +168,7 @@ function goToReservation() {
     </div>
 
     <!-- Description and Buttons -->
-    <div class="flex flex-col">
+    <div class="flex flex-col flex-1">
       <Panel class="h-5/6 w-full flex-none" header="description">
         <p class="m-0">
           The Panoramic Hotel is a modern, elegant 4-star hotel overlooking the sea, perfect for a romantic, charming vacation, in the enchanting setting of Taormina and the Ionian Sea.

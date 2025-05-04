@@ -11,117 +11,67 @@ import Textarea from 'primevue/textarea'
 import qstHolder from './qstHolder.vue'
 import restaurantExra from './restaurantExra.vue'
 import SplitButton from 'primevue/splitbutton'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import api from '@/axios'
+import { Toast } from 'primevue'
 
-
-// ✅ Props preserved exactly with required fields
 const props = defineProps({
-  name: {
-    type: String,
-    required: true
-  },
-  city: {
-    type: String,
-    required: true
-  },
-  type: {
-    type: String,
-    required: true
-  },
-  phone: {
-    type: String,
-    required: true
-  },
-  email: {
-    type: String,
-    required: true
-  },
-  location: {
-    type: String,
-    required: true
-  },
-  images: {
-    type: Array,
-    required: true
-  },
-  value: {
-    type: Number,
-    required: true
-  },
-  amenities: {
-    type: Array,
-    required: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  checkin: {
-    type: String,
-    required: true
-  },
-  checkout: {
-    type: String,
-    required: true
-  },
-  stars: {
-    type: Number,
-    required: true
-  },
-  menuItems: {
-    type: Array,
-  },
-  cuisineType:{
-    type: String,
-  }
+  name: String,
+  city: String,
+  type: String,
+  phone: String,
+  email: String,
+  location: String,
+  images: Array,
+  value: Number,
+  amenities: Array,
+  description: String,
+  checkin: String,
+  checkout: String,
+  stars: Number,
+  menuItems: Array,
+  cuisineType: String,
 })
 
 // Review Dialog state
 const reviewDialogVisible = ref(false)
 const reviewText = ref('')
-const reviewRating = ref(0)
-console.log("menu",props.menuItems,"cujsine",props.cuisineType)
-function submitReview() {
-  console.log('Review Submitted:')
-  console.log('Rating:', reviewRating.value)
-  console.log('Review:', reviewText.value)
+const reviewAnswers = ref([])
 
-  // Reset form
-  reviewRating.value = 0
-  reviewText.value = ''
+const route = useRoute()
+function CloseReviewDialog() {
+  reviewAnswers.value = []
+  reviewText.value    = ''
   reviewDialogVisible.value = false
-
-  // Optional: emit or store the review
 }
 
-// Galleria responsive settings
-const responsiveOptions = ref([
-  {
-    breakpoint: '1300px',
-    numVisible: 4
-  },
-  {
-    breakpoint: '575px',
-    numVisible: 1
-  }
-])
-
-console.log('amenities', props.amenities)
-
-
-// SplitButton items
-const reservationItems = [
-  {
-    label: 'Make a Quick Reservation',
-    icon: 'pi pi-clock',
-    command: () => {
-      document.querySelector('#quick-reservation-link')?.click()
+async function submitReview() {
+  try {
+    const id = route.params.id
+    const payload = {
+      content: reviewText.value,
+      answers: reviewAnswers.value.value,
     }
-  }
-]
 
-function goToReservation() {
-  document.querySelector('#main-reservation-link')?.click()
+    console.log('Submitting Review Payload:', payload) // Debugging payload
+
+    const response = await api.post(`/reviews/add/${id}/`, payload)
+    console.log('Review submitted successfully:', response.data)
+
+    // Reset form
+    reviewText.value = ''
+    reviewAnswers.value = []
+    reviewDialogVisible.value = false
+    Toast.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Review submitted successfully!',
+      life: 3000,
+      
+    })
+  } catch (error) {
+    console.error('Failed to submit review:', error.response?.data || error)
+  }
 }
 </script>
 
@@ -145,7 +95,7 @@ function goToReservation() {
             class="w-full h-96 object-cover rounded-lg"
           />
         </template>
-        <template #thumbnail="slotProps" class="p-2" >
+        <template #thumbnail="slotProps" class="p-2">
           <img
             :src="slotProps.item.thumbnailImageSrc"
             :alt="slotProps.item.alt"
@@ -181,53 +131,54 @@ function goToReservation() {
         />
       </div>
 
-      <HotelExtra v-if="props.type == 'hotel'"
-        :amenities=props.amenities
+      <HotelExtra
+        v-if="props.type == 'hotel'"
+        :amenities="props.amenities"
         :checkInTime="props.checkin"
         :checkOutTime="props.checkout"
         :stars="props.stars"
       />
-      <restaurantExra v-if="props.type == 'restaurant'"
-      :menu="props.menuItems"
-      :cuisineType="props.cuisineType"
+      <restaurantExra
+        v-if="props.type == 'restaurant'"
+        :menu="props.menuItems"
+        :cuisineType="props.cuisineType"
       />
     </div>
 
     <!-- Description and Buttons -->
     <div class="flex flex-col flex-1">
       <Panel class="h-5/6 w-full flex-none min-w-full" header="description">
-        <p class="m-0">
-          {{ props.description }}
-        </p>
+        <p class="m-0">{{ props.description }}</p>
       </Panel>
       <div class="flex gap-10 py-5 justify-center">
         <Button label="Add A Review" severity="success" raised @click="reviewDialogVisible = true" />
-        
-        <!-- SplitButton -->
-        <SplitButton label="Make a Reservation" :model="reservationItems" raised severity="info" @click="goToReservation" />
-
-        <!-- Hidden router-links triggered by JS -->
-        <router-link to="/makeReservation" id="main-reservation-link" class="hidden" />
-        <router-link to="/quick-reservation" id="quick-reservation-link" class="hidden" />
+        <SplitButton label="Make a Reservation" :model="reservationItems" raised severity="info" />
       </div>
     </div>
-  <!-- Review Dialog -->
-  <Dialog v-model:visible="reviewDialogVisible" modal header="Add Your Review" :style="{ width: '30rem' }">
-    <template #header>
-      <div class="inline-flex items-center justify-center gap-2">
-        <i class="pi pi-comment text-xl"></i>
-        <span class="font-bold">Leave a Review</span>
-      </div>
-    </template>
 
-    <span class="text-surface-500 dark:text-surface-400 block mb-4">Tell us what you think about this place.</span>
-    <div>
-      <qstHolder />
-    </div>
-    <template #footer>
-      <Button label="Cancel" text severity="secondary" @click="reviewDialogVisible = false" />
-      <Button label="Submit" severity="success" @click="submitReview" />
-    </template>
-  </Dialog>
+    <!-- Review Dialog -->
+    <Dialog v-model:visible="reviewDialogVisible" modal header="Add Your Review" :style="{ width: '30rem' }">
+      <template #header>
+        <div class="inline-flex items-center justify-center gap-2">
+          <i class="pi pi-comment text-xl"></i>
+          <span class="font-bold">Leave a Review</span>
+        </div>
+      </template>
+
+      <span class="text-surface-500 dark:text-surface-400 block mb-4">Tell us what you think about this place.</span>
+      <div>
+        <qstHolder
+          @update-answers="(val) => {
+            reviewAnswers.value = val
+            console.log('Received Answers in establishementCard:', val)
+          }"
+          v-model="reviewText"
+        />
+      </div>
+      <template #footer>
+        <Button label="Cancel" text severity="secondary" @click="CloseReviewDialog" />
+        <Button label="Submit" severity="success" @click="submitReview" />
+      </template>
+    </Dialog>
   </div>
 </template>
