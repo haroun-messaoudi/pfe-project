@@ -1,5 +1,10 @@
 <script setup>
 import myReview from '@/components/myReview.vue'
+const props = defineProps({
+  review: {
+    type: Array,  // This should be an array of hits (search results)
+  },
+});
 </script>
 
 <template>
@@ -11,7 +16,7 @@ import myReview from '@/components/myReview.vue'
         </h2>
         <!-- cards loop -->
         <div class="flex flex-col  gap-4"> 
-          <myReview />
+          <myReview v-for="(hit, index) in props.review" :key="index" :review="hit"/>
         </div>
       </div>
 </section>

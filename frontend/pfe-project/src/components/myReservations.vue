@@ -1,5 +1,6 @@
 <script setup>
 import myReservation from '@/components/myReservation.vue'
+import myReservationR from './myReservationR.vue';
 </script>
 
 <template>
@@ -12,13 +13,11 @@ import myReservation from '@/components/myReservation.vue'
             <!-- cards loop -->
             <div class="flex flex-col  gap-4"> 
                 <myReservation />
-
-                <myReservation />
-
                 <myReservation />
                 <myReservation />
-                <myReservation />
-                <myReservation />
+                <myReservationR />
+                <myReservationR />
+                <myReservationR />
             </div>
         </div>
     </section>
