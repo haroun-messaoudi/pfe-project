@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'reservations',
     'reviews',
     'algoliasearch_django',
-
+    'django_seed',
 ]
 
 MIDDLEWARE = [

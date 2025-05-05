@@ -5,10 +5,6 @@ const  props = defineProps( {
       type: String,
       required: true,
     },
-    reviewerLastName: {
-        type: String,
-        required:true
-    },
     rating: {
       type: Number,
       required: true,
@@ -32,7 +28,7 @@ const  props = defineProps( {
 <Fieldset>
     <template #legend>
                 <div class="flex items-center pl-2 gap-3">
-                    <span class="font-bold p-2">{{ props.estaName }} - {{ props.reviewerLastName }}</span>
+                    <span class="font-bold p-2">{{ props.reviewerName }}</span>
                 </div>
             </template>
     <div class="p-4 border-0 rounded-lg w-full max-w-md">

@@ -8,8 +8,8 @@ import Button from 'primevue/button'
 import Message from 'primevue/message'
 import Dropdown from 'primevue/dropdown'
 import api from '@/axios'
-
-
+import { FileUpload } from 'primevue'
+import { watch } from 'vue'
 
 const establishementStore = useEstablishementStore();
 const cities = [
@@ -106,9 +106,41 @@ const isDeleting = ref(false);
 const amenities = ref(establishementStore.amenities);
 const cuisines = ref(establishementStore.cuisines);
 
-const newTable = ref({ capacity: null, description: '', amount: null, location: '' });
-const newRoom = ref({ room_type: '', price_per_night: null, amount: null, capacity: null });
+const newTable = ref({ capacity: null, description: '', amount: null, location: '',image: null });
+const newRoom = ref({ room_type: '', price_per_night: null, amount: null, capacity: null,image: null,description:'' });
 const newMenuItem = ref({ name: '', description: '', price: null });
+
+const onImageSelectTable = (event) => {
+  const file = event.files?.[0];
+  if (file) {
+    newTable.value.image = file;
+  }
+};
+
+const tableImageURL = ref(null);
+
+watch(() => newTable.value.image, (file, prev) => {
+  if (prev && tableImageURL.value) {
+    URL.revokeObjectURL(tableImageURL.value);
+  }
+  tableImageURL.value = file ? URL.createObjectURL(file) : null;
+})
+
+const onImageSelectRoom = (event) => {
+  const file = event.files?.[0];
+  if (file) {
+    newRoom.value.image = file;
+  }
+};
+const roomImageURL = ref(null);
+watch(() => newRoom.value.image, (file, prev) => {
+  if (prev && roomImageURL.value) {
+    URL.revokeObjectURL(roomImageURL.value);
+  }
+  roomImageURL.value = file ? URL.createObjectURL(file) : null;
+})
+
+
 
 const errors = reactive(establishementStore.errors)
 const form = ref({
@@ -138,16 +170,12 @@ const refreshForm = async () => {
     await establishementStore.fetchOwnerEstablishement();
     form.value = establishementStore.establishement;
     await establishementStore.fetchAmenities();
-    console.log('Fetched Amenities:', establishementStore.amenities);
-    amenities.value = establishementStore.amenities.map(a => ({
+    amenities.value = establishementStore?.amenities.map(a => ({
       label: a.label,
       value: a.value
     }));
-    console.log(amenities)    // Map hotel amenities
-    
 
     // Debugging: Log the mapped amenities
-    console.log('Mapped Amenities:', form.value.hotel.amenities);
   } catch (error) {
     console.error('Error refreshing form:', error);
   } finally {
@@ -182,26 +210,51 @@ const updateEstablishement = async () => {
   }
 };
 const addRoom = async () => {
-
   try {
-    await establishementStore.addRoom(newRoom.value);
-    newRoom.value = { room_type: '', price_per_night: null, amount: null,capacity: null };
+    // 1) build multipart payload
+    const formData = new FormData();
+    formData.append('room_type',       newRoom.value.room_type);
+    formData.append('price_per_night', newRoom.value.price_per_night);
+    formData.append('amount',          newRoom.value.amount);
+    formData.append('capacity',        newRoom.value.capacity);
+    formData.append('description',newRoom.value.description)
+    if (newRoom.value.image) {
+      formData.append('image',         newRoom.value.image);
+    }
+
+    // 2) send via your Pinia action
+    await establishementStore.addRoom(formData);
+
+    // 3) reset & reload
+    newRoom.value = { room_type: '', price_per_night: null, amount: null, capacity: null, image: null };
     await refreshForm();
   } catch (error) {
     console.error('Error adding room:', error);
   }
-};
-
+}
 const addTable = async () => {
-
   try {
-    await establishementStore.addTable(newTable.value);
-    newTable.value = { capacity: null, description: '', amount: null, location: '' };
+    // 1) create a FormData payload
+    const formData = new FormData();
+    formData.append('capacity', newTable.value.capacity);
+    formData.append('description', newTable.value.description);
+    formData.append('amount', newTable.value.amount);
+    formData.append('location', newTable.value.location);
+    if (newTable.value.image) {
+      formData.append('image', newTable.value.image);
+    }
+
+    // 2) call your store action with FormData instead of raw object
+    await establishementStore.addTable(formData);
+
+    // reset & refresh
+    newTable.value = { capacity: null, description: '', amount: null, location: '', image: null };
     await refreshForm();
   } catch (error) {
     console.error('Error adding table:', error);
   }
 };
+
 
 const addMenuItem = async () => {
 
@@ -285,6 +338,7 @@ const deleteMenuItem = async (menuItem) => {
 };
 
 
+
 const updateRestaurant = async () => {
   try {
     await establishementStore.updateRestaurant(form.value.restaurant);
@@ -309,6 +363,7 @@ onMounted(async () => {
     console.error('Error on mounted:', error);
   }
 });
+console.log(errors,"eererererererer")
 </script>
 
 <template>
@@ -404,22 +459,22 @@ onMounted(async () => {
       <div>
         <label class="block font-medium">Room Type</label>
         <InputText v-model="room.room_type" class="w-full" placeholder="Enter room type" />
-        <Message v-if="errors.newRoom.room_type" severity="error">{{ errors.newRoom.room_type }}</Message>
+        <Message v-if="errors.updateRoom.room_type" severity="error">{{ errors.updateRoom.room_type }}</Message>
       </div>
       <div>
         <label class="block font-medium">Price Per Night</label>
         <InputNumber v-model="room.price_per_night" class="w-full" placeholder="Enter price per night" />
-        <Message v-if="errors.newRoom.price_per_night" severity="error">{{ errors.newRoom.price_per_night }}</Message>
+        <Message v-if="errors.updateRoom.price_per_night" severity="error">{{ errors.updateRoom.price_per_night }}</Message>
       </div>
       <div>
         <label class="block font-medium">Amount</label>
         <InputNumber v-model="room.amount" class="w-full" placeholder="Enter room amount" />
-        <Message v-if="errors.newRoom.amount" severity="error">{{ errors.newRoom.amount }}</Message>
+        <Message v-if="errors.updateRoom.amount" severity="error">{{ errors.updateRoom.amount }}</Message>
       </div>
       <div>
         <label class="block font-medium">Capacity</label>
         <InputNumber v-model="room.capacity" class="w-full" placeholder="Enter room capacity" />
-        <Message v-if="errors.newRoom.capacity" severity="error">{{ errors.newRoom.capacity }}</Message>
+        <Message v-if="errors.updateRoom.capacity" severity="error">{{ errors.updateRoom.capacity }}</Message>
       </div>
       <div class="flex space-x-4 mt-2">
         <Button label="Update Room" class="p-button-success" @click="updateRoom(room)" />
@@ -450,6 +505,25 @@ onMounted(async () => {
         <InputNumber v-model="newRoom.capacity" class="w-full" placeholder="Enter room capacity" />
         <Message v-if="errors.newRoom.capacity" severity="error">{{ errors.newRoom.capacity }}</Message>
       </div>
+      <div>
+        <label class="block font-medium">Description</label>
+        <InputText v-model="newRoom.description" class="w-full" placeholder="Enter room description" />
+        <Message v-if="errors.newRoom.description" severity="error">{{ errors.newRoom.description }}</Message>
+      </div>
+      <div>
+        <FileUpload
+            name="image"
+            :multiple="false"
+            customUpload
+            :show-cancel-button="false"
+            :show-upload-button="false"
+            accept="image/*"
+            @select="onImageSelectRoom"
+          />
+          <div v-if="roomImageURL" class="mt-2">
+          </div>
+        </div>
+        <Message v-if="errors.newRoom.image" severity="error">{{ errors.newRoom.image }}</Message>
       <Button label="Add Room" class="p-button-success mt-2" @click="addRoom" />
     </div>
     <!-- Restaurant Details -->
@@ -465,7 +539,7 @@ onMounted(async () => {
           placeholder="Select a cuisine"
           class="w-full"
         />
-        <Message v-if="errors.restaurant.cuisines" severity="error">{{ errors.restaurant.cuisines }}</Message>
+        <Message v-if="errors.restaurant?.cuisines" severity="error">{{ errors.restaurant.cuisines }}</Message>
       </div>
       <Button label="Update Restaurant" class="p-button-success mt-4" @click="updateRestaurant" />
       <h4 class="text-lg font-bold mt-4">Menu Items</h4>
@@ -473,17 +547,17 @@ onMounted(async () => {
         <div>
           <label class="block font-medium">Name</label>
           <InputText v-model="menuItem.name" class="w-full" placeholder="Enter menu item name" />
-          <Message v-if="errors.newMenuItem.name" severity="error">{{ errors.newMenuItem.name }}</Message>
+          <Message v-if="errors.updateMenuItem.name" severity="error">{{ errors.updateMenuItem.name }}</Message>
         </div>
         <div>
           <label class="block font-medium">Description</label>
           <InputText v-model="menuItem.description" class="w-full" placeholder="Enter menu item description" />
-          <Message v-if="errors.newMenuItem.description" severity="error">{{ errors.newMenuItem.description }}</Message>
+          <Message v-if="errors.updateMenuItem.description" severity="error">{{ errors.updateMenuItem.description }}</Message>
         </div>
         <div>
           <label class="block font-medium">Price</label>
           <InputNumber v-model="menuItem.price" class="w-full" placeholder="Enter menu item price" />
-          <Message v-if="errors.newMenuItem.price" severity="error">{{ errors.newMenuItem.price }}</Message>
+          <Message v-if="errors.updateMenuItem.price" severity="error">{{ errors.updateMenuItem.price }}</Message>
         </div>
         <div class="flex space-x-4 mt-2">
           <Button label="Update Menu Item" class="p-button-success" @click="updateMenuItem(menuItem)" />
@@ -516,17 +590,17 @@ onMounted(async () => {
         <div>
           <label class="block font-medium">Capacity</label>
           <InputNumber v-model="table.capacity" class="w-full" placeholder="Enter table capacity" />
-          <Message v-if="errors.newTable.capacity" severity="error">{{ errors.newTable.capacity }}</Message>
+          <Message v-if="errors.updateTable.capacity" severity="error">{{ errors.updateTable.capacity }}</Message>
         </div>
         <div>
           <label class="block font-medium">Description</label>
           <InputText v-model="table.description" class="w-full" placeholder="Enter table description" />
-          <Message v-if="errors.newTable.description" severity="error">{{ errors.newTable.description }}</Message>
+          <Message v-if="errors.updateTable.description" severity="error">{{ errors.updateTable.description }}</Message>
         </div>
         <div>
           <label class="block font-medium">Amount</label>
           <InputNumber v-model="table.amount" class="w-full" placeholder="Enter table amount" />
-          <Message v-if="errors.newTable.amount" severity="error">{{ errors.newTable.amount }}</Message>
+          <Message v-if="errors.updateTable.amount" severity="error">{{ errors.updateTable.amount }}</Message>
         </div>
         <div class="flex space-x-4 mt-2">
           <Button label="Update Table" class="p-button-success" @click="updateTable(table)" />
@@ -536,28 +610,84 @@ onMounted(async () => {
 
       <div>
         <h5 class="text-md font-bold mb-2">Add New Table</h5>
+
         <div>
           <label class="block font-medium">Capacity</label>
-          <InputNumber v-model="newTable.capacity" class="w-full" placeholder="Enter table capacity" />
-          <Message v-if="errors.newTable.capacity" severity="error">{{ errors.newTable.capacity }}</Message>
+          <InputNumber
+            v-model="newTable.capacity"
+            class="w-full"
+            placeholder="Enter table capacity"
+          />
+          <Message
+            v-if="errors.newTable.capacity"
+            severity="error"
+            text="errors.capacity[0]"
+          >{{ errors.newTable.capacity }}</Message>
         </div>
+
         <div>
           <label class="block font-medium">Description</label>
-          <InputText v-model="newTable.description" class="w-full" placeholder="Enter table description" />
-          <Message v-if="errors.newTable.description" severity="error">{{ errors.newTable.description }}</Message>
+          <InputText
+            v-model="newTable.description"
+            class="w-full"
+            placeholder="Enter table description"
+          />
+          <Message
+            v-if="errors.newTable.description"
+            severity="error"
+          >{{ errors.newTable.description }}</Message>
         </div>
+
         <div>
           <label class="block font-medium">Amount</label>
-          <InputNumber v-model="newTable.amount" class="w-full" placeholder="Enter table amount" />
-          <Message v-if="errors.newTable.amount" severity="error">{{ errors.newTable.amount }}</Message>
+          <InputNumber
+            v-model="newTable.amount"
+            class="w-full"
+            placeholder="Enter table amount"
+          />
+          <Message
+            v-if="errors.newTable.amount"
+            severity="error"
+          >{{ errors.newTable.amount }}</Message>
         </div>
+
         <div>
           <label class="block font-medium">Location</label>
-          <InputText v-model="newTable.location" class="w-full" placeholder="Enter table location" />
-          <Message v-if="errors.newTable.location" severity="error">{{ errors.newTable.location }}</Message>
+          <InputText
+            v-model="newTable.location"
+            class="w-full"
+            placeholder="Enter table location"
+          />
+          <Message
+            v-if="errors.newTable.location"
+            severity="error"
+          >{{ errors.newTable.location }}</Message>
         </div>
-        <Button label="Add Table" class="p-button-success mt-2" @click="addTable" />
+
+        <div>
+          <label class="block font-medium">Picture</label>
+          <FileUpload
+            name="image"
+            :multiple="false"
+            customUpload
+            :show-cancel-button="false"
+            :show-upload-button="false"
+            accept="image/*"
+            @select="onImageSelectTable"
+          />
+          <Message
+            v-if="errors.newTable.image"
+            severity="error"
+          >{{ errors.newTable.image }}</Message>
+        </div>
+
+        <Button
+          label="Add Table"
+          class="p-button-success mt-2"
+          @click="addTable"
+        />
       </div>
+
     </div>
   </div>
 </template>

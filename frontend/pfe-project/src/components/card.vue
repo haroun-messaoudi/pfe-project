@@ -11,6 +11,9 @@ const props = defineProps({
     required: true
   }
 });
+
+console.log(props)
+
 </script>
 
 <template>
@@ -20,7 +23,7 @@ const props = defineProps({
     <!-- Header: Establishment Image -->
     <template #header>
       <img
-        :src="props.cardInfo.image || restImg"
+        :src="props.cardInfo.images?.[0]?.image || restImg"
         alt="Establishment image"
         class="w-full h-48 object-cover mb-4"
       />

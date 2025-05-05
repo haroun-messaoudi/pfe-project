@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied,NotFound
 from django.contrib.auth.models import User
-from .models import Hotel,Restaurant,Establishement,Table,Room,MenuItem,Amenity,Cuisine
+from .models import Hotel,Restaurant,Establishement,Table,Room,MenuItem,Amenity,Cuisine,Images
 from .permissions import IsAssociatedWithEstablishement,IsAssociatedWithHotel,IsAssociatedWithRestaurant,IsOWner
 from . import serializers
 from algoliasearch_django import raw_search
@@ -342,3 +342,41 @@ class BestRatedRestaurantsView(APIView):
             }, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class EstablishementTablesAndRoomsView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAssociatedWithEstablishement]
+
+    def get(self, request):
+        estab = request.user.profile.establishement
+        if not estab:
+            return Response({"error": "No establishment associated with this user."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        if estab.type == "hotel":
+            rooms = Room.objects.filter(hotel=estab.hotel)
+            serializer = serializers.RoomSerializer(
+                rooms,
+                many=True,
+                context={'request': request}
+            )
+            return Response({"rooms": serializer.data}, status=status.HTTP_200_OK)
+
+        elif estab.type == "restaurant":
+            tables = Table.objects.filter(restaurant=estab.restaurant)
+            serializer = serializers.TableSerializer(
+                tables,
+                many=True,
+                context={'request': request}
+            )
+            return Response({"tables": serializer.data}, status=status.HTTP_200_OK)
+
+
+
+class EstablishmentImagesView(APIView):
+    def get(self, request, pk):
+        images = Images.objects.filter(establishement_id=pk)
+        serializer = serializers.ImageServeSerializer(images, many=True, context={'request': request})
+        return Response(serializer.data)
+        

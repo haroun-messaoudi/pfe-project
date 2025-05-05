@@ -18,7 +18,7 @@ const props = defineProps({
     <!-- Header: Establishment Image -->
     <template #header>
       <img
-        :src="props.tableInfo.image || restImg"
+        :src="props.tableInfo.image_url || restImg"
         alt="Establishment image"
         class="w-full h-48 object-cover mb-4"
       />
@@ -26,19 +26,19 @@ const props = defineProps({
 
     <!-- Title: capacity -->
     <template #title>
-      <h3 class="text-xl font-semibold">{{ props.tableInfo.capacity }}</h3>
+      <h3 class="text-xl font-semibold">capacity: {{ props.tableInfo.capacity }}</h3>
     </template>
 
     <!-- Subtitle: totaltables -->
     <template #subtitle>
-      <span class="capitalize">{{ props.tableInfo.totelTables }}</span>
+      <span class="capitalize">available: {{ props.tableInfo.amount }}</span>
       <span class="mx-1">•</span>
     </template>
 
     <!-- Content: Description -->
     <template #content>
       <p class="text-gray-700 mb-4">
-        {{ props.tableInfo.description || 'No description available.' }}
+        description :{{ props.tableInfo.description || 'No description available.' }}
       </p>
     </template>
 
@@ -46,7 +46,7 @@ const props = defineProps({
     <template #footer>
       <div class="flex flex-col">
         <small class="text-sm text-gray-600 mb-2">
-          📍 {{ props.tableInfo.location }}
+          📍location: {{ props.tableInfo.location }}
         </small>
         
       </div>

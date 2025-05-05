@@ -4,6 +4,7 @@ from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from reviews.serializers import ReviewSerializer
+
 class AmenitySerializer(ModelSerializer):
     class Meta:
         model = Amenity
@@ -76,31 +77,79 @@ class RestaurantSerializer(ModelSerializer):
         return restaurant
     
 
-class TableSerializer(ModelSerializer):
+from rest_framework import serializers
+from .models import Table
+
+class TableSerializer(serializers.ModelSerializer):
+    # 1) write-only field for incoming uploads
+    image = serializers.ImageField(write_only=True, required=True)
+
+    # 2) read-only field for the URL
+    image_url = serializers.ImageField(source='image', read_only=True, use_url=True)
+
     class Meta:
         model = Table
-        fields = "__all__"
+        fields = '__all__'
         extra_kwargs = {
-            "restaurant": {"read_only": True},
+            # keep restaurant read-only
+            'restaurant': {'read_only': True},
         }
+
     def create(self, validated_data):
-        request = self.context.get("request") 
+        # Pop the file off validated_data (ImageField put it there)
+        image = validated_data.pop('image', None)
+        request = self.context.get('request')
         restaurant = request.user.profile.establishement.restaurant
-        return Table.objects.create(restaurant=restaurant, **validated_data)
+
+        # Create the Table instance
+        table = Table.objects.create(restaurant=restaurant, **validated_data)
+
+        # Attach the image and save again
+        if image:
+            table.image = image
+            table.save()
+
+        return table
 
 
-class RoomSerializer(ModelSerializer):
+
+class RoomSerializer(serializers.ModelSerializer):
+    # 1) write-only field for incoming uploads, only jpeg/png allowed
+    image = serializers.ImageField(
+        write_only=True,
+        required=True,
+    )
+
+    # 2) read-only field for the URL
+    image_url = serializers.ImageField(
+        source='image',
+        read_only=True,
+        use_url=True
+    )
+
     class Meta:
         model = Room
-        fields = "__all__"
+        fields = '__all__'
         extra_kwargs = {
-            "hotel": {"read_only": True},
+            # keep hotel relation read-only
+            'hotel': {'read_only': True},
         }
-    
+
     def create(self, validated_data):
-        request = self.context.get("request") 
+        # extract the uploaded file
+        image = validated_data.pop('image')
+        request = self.context.get('request')
         hotel = request.user.profile.establishement.hotel
-        return Room.objects.create(hotel=hotel, **validated_data)
+
+        # create the Room instance
+        room = Room.objects.create(hotel=hotel, **validated_data)
+
+        # attach and save the image
+        room.image = image
+        room.save()
+
+        return room
+
 
 class ImagesSerializer(ModelSerializer):
     class Meta:
@@ -109,6 +158,19 @@ class ImagesSerializer(ModelSerializer):
         extra_kwargs = {
             "establishement": {"read_only": True},
         }
+
+class ImageServeSerializer(ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Images
+        fields = ['id', 'image_url']
+
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.image.url)
+
+
 class EstablishementSerializer(ModelSerializer):
     images = ImagesSerializer(many=True,required=False)
     reviews = ReviewSerializer(many=True,read_only=True)
@@ -150,7 +212,7 @@ class HotelDetailsSerializer(ModelSerializer):
 class EstablishementDetailsSerializer(ModelSerializer):
     restaurant = RestaurantDetailSerializer(read_only=True)
     hotel = HotelDetailsSerializer(read_only=True)
-    images = ImagesSerializer(many=True, required=False)
+    images = serializers.SerializerMethodField() 
     reviews = ReviewSerializer(many=True, read_only=True)
 
     class Meta:
@@ -161,6 +223,14 @@ class EstablishementDetailsSerializer(ModelSerializer):
             "profile": {"read_only": True},
         }
 
+    def get_images(self, obj):
+        request = self.context.get('request')
+        image_qs = Images.objects.filter(establishement=obj)
+        return [
+            request.build_absolute_uri(image.image.url)
+            for image in image_qs
+            if image.image
+        ]
     def to_representation(self, instance):
         """
         Customize the representation to include either the restaurant or hotel details

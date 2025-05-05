@@ -28,5 +28,10 @@ urlpatterns = [
     path("cuisines/list/", views.CuisineListView.as_view(), name="cuisine-list"),
     path("best-restaurants/", views.BestRatedRestaurantsView.as_view(), name="best-restaurants"),
     path("best-hotels/", views.BestRatedHotelsView.as_view(), name="best-hotels"),
-
+    path("tables-and-rooms/",views.EstablishementTablesAndRoomsView.as_view(),name="establishement-tables-rooms"),
+    path(
+      '<int:pk>/images/',
+      views.EstablishmentImagesView.as_view(),
+      name='establishment-images'
+    ),
 ]

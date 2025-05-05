@@ -2,6 +2,27 @@
 import ownerNav from '@/components/ownerNav.vue';
 import ownerEstab from '@/components/ownerEstab.vue';
 import tablesHolder from '@/components/tablesHolder.vue';
+import { onMounted } from 'vue';
+import { useProfileStore } from '@/stores/profile';
+
+const profileStore = useProfileStore()
+
+let text = ""
+
+if(profileStore.establishement.type=="restaurant"){
+  text = "My tables"
+}
+else if(profileStore.establishement.type=="hotel"){
+  text = "My rooms"
+}
+
+
+onMounted(() => {
+  // Fetch or initialize any data needed for the component
+  profileStore.fetchProfileEstablishementDetails()
+  profileStore.fetchEstblishementRoomsAndTables()
+})
+
 </script>
 
 
@@ -9,24 +30,26 @@ import tablesHolder from '@/components/tablesHolder.vue';
     <div>
     <ownerNav />
     <ownerEstab 
-    :name="'My Restaurant'"
-    :type="'Fine Dining'"
-    :phone="'0564854784'"
-    :email="'restaurant@example.com'"
-    :location="'Downtown'"
-    :images="[
-      { itemImageSrc: '/src/assets/img/rafiki.png', thumbnailImageSrc: '/src/assets/img/rafiki.png', alt: 'Restaurant Image 1' },
-      { itemImageSrc: '/src/assets/img/hrn.png', thumbnailImageSrc: '/src/assets/img/hrn.png', alt: 'Restaurant Image 2' },
-      { itemImageSrc: '/src/assets/img/thr.png', thumbnailImageSrc: '/src/assets/img/thr.png', alt: 'Restaurant Image 3' },
-      { itemImageSrc: '/src/assets/img/rafiki.png', thumbnailImageSrc: '/src/assets/img/rafiki.png', alt: 'Restaurant Image 4' },
-      { itemImageSrc: '/src/assets/img/hrn.png', thumbnailImageSrc: '/src/assets/img/hrn.png', alt: 'Restaurant Image 5' },
-      { itemImageSrc: '/src/assets/img/thr.png', thumbnailImageSrc: '/src/assets/img/thr.png', alt: 'Restaurant Image 6' }
-    ]"
+    :name="profileStore.establishement.name"
+    :type="profileStore.establishement.type"
+    :phone="profileStore.establishement.phone_number"
+    :email="profileStore.establishement.email"
+    :location="profileStore.establishement.location"
+    :averageRating="profileStore.establishement.average_rating"
+    :description="profileStore.establishement.description"
+    :menuItems = "profileStore.establishement.details?.menu_items"
+    :cuisineType = "profileStore.establishement.details?.cuisine?.name"
+    :images="profileStore.establishement?.images"
+    :amenities="profileStore.establishement.details?.amenities"
+    :checkin="profileStore.establishement.details?.checkInTime"
+    :checkout="profileStore.establishement.details?.checkOutTime"
+    :stars="profileStore.establishement.details?.stars"
     :value="4"
     />
-    <h2 class="text-3xl font-bold pb-6 text-center bg-gray-100 pt-5">
-        My Tables
+    <h2  class="text-3xl font-bold pb-6 text-center bg-gray-100 pt-5">
+        {{ text }}
       </h2>
-    <tablesHolder />
+    <tablesHolder v-if="profileStore.establishement.type=='restaurant'" :title="'restaurant'" :tables="profileStore.establishementTables" />
+    <tablesHolder v-if="profileStore.establishement.type=='hotel'" :title="'hotel'" :tables="profileStore.establishementRooms" />
     </div>
 </template>

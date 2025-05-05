@@ -12,6 +12,7 @@ import qstHolder from './qstHolder.vue'
 import restaurantExra from './restaurantExra.vue'
 import SplitButton from 'primevue/splitbutton'
 import { useRoute, useRouter } from 'vue-router'
+import Message from 'primevue/message'
 import api from '@/axios'
 import { Toast } from 'primevue'
 
@@ -37,14 +38,13 @@ const props = defineProps({
 const reviewDialogVisible = ref(false)
 const reviewText = ref('')
 const reviewAnswers = ref([])
-
 const route = useRoute()
 function CloseReviewDialog() {
   reviewAnswers.value = []
   reviewText.value    = ''
   reviewDialogVisible.value = false
 }
-
+const errorMessages = ref([])
 async function submitReview() {
   try {
     const id = route.params.id
@@ -55,6 +55,7 @@ async function submitReview() {
 
     console.log('Submitting Review Payload:', payload) // Debugging payload
 
+
     const response = await api.post(`/reviews/add/${id}/`, payload)
     console.log('Review submitted successfully:', response.data)
 
@@ -62,6 +63,7 @@ async function submitReview() {
     reviewText.value = ''
     reviewAnswers.value = []
     reviewDialogVisible.value = false
+    errorMessages.value = [] 
     Toast.add({
       severity: 'success',
       summary: 'Success',
@@ -70,8 +72,27 @@ async function submitReview() {
       
     })
   } catch (error) {
-    console.error('Failed to submit review:', error.response?.data || error)
+  const errData = error.response?.data
+  console.error('Failed to submit review:', errData || error)
+
+  errorMessages.value = [] // Clear previous errors
+
+  if (errData) {
+    if (errData.content) {
+      errorMessages.value.push(`please type a review`)
+    }
+    if (errData.answers) {
+      errorMessages.value.push(`please fill all the answers`)
+    }
+    if(errData.detail){
+      errorMessages.value.push(errData.detail[0])
+    }
+  } else {
+    errorMessages.value.push = ['An unexpected error occurred. Please try again.']
   }
+}
+  console.log(errorMessages.value[0]) // Debugging error messages
+
 }
 </script>
 
@@ -167,6 +188,17 @@ async function submitReview() {
 
       <span class="text-surface-500 dark:text-surface-400 block mb-4">Tell us what you think about this place.</span>
       <div>
+        <div v-if="errorMessages.length" class="mb-4">
+          <Message
+            v-if="errorMessages.length"
+            :key="index"
+            severity="error"
+            
+          >
+          {{ errorMessages[0] }}
+          </Message>
+        </div>
+
         <qstHolder
           @update-answers="(val) => {
             reviewAnswers.value = val

@@ -59,10 +59,24 @@ const establishment = computed(() => {
     topEstablishmentsStore.bestRestaurants.hits?.find((item) => item.objectID === id)
   );
 });
+
+const imageList = computed(() => {
+  if (!establishment.value?.images?.length) {
+    return []; // or a single default placeholder if you prefer
+  }
+  return establishment.value.images.map((img, idx) => ({
+    itemImageSrc: img.image,
+    thumbnailImageSrc: img.image,
+    alt: `${establishment.value.name} image ${idx + 1}`,
+  }));
+});
+console.log(imageList.value)
+
 console.log(establishment.value)
 onMounted(async () => {
   // Fetch reviews when the component is mounted
   await fetchReviews();
+  
   console.log(reviews)
   // Set the fetched reviews to a reactive property or state
   // For example, you can use a ref or reactive object to store the reviews
@@ -86,10 +100,7 @@ onMounted(async () => {
         :checkout="establishment.hotel_check_out_time"
         :stars="establishment.hotel_stars"
         :city="establishment.city"
-        :images="[
-          { itemImageSrc: '/src/assets/img/logo.png', thumbnailImageSrc: '/src/assets/img/logo.png', alt: 'Image 1' },
-          { itemImageSrc: '/src/assets/img/hrn.png', thumbnailImageSrc: '/src/assets/img/hrn.png', alt: 'Image 2' }
-        ]"
+        :images="imageList"
         :value="establishment.average_rating"
         :menuItems="establishment?.restaurant_menu_items"
         :cuisineType="establishment?.restaurant_cuisine"

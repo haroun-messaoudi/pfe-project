@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps } from 'vue'
+import { ref, defineProps, onMounted, computed } from 'vue'
 import Rating from 'primevue/rating'
 import Galleria from 'primevue/galleria'
 import HotelExtra from './hotelExtra.vue'
@@ -10,24 +10,12 @@ import Textarea from 'primevue/textarea'
 import restaurantExra from './restaurantExra.vue'
 import SplitButton from 'primevue/splitbutton'
 import { useRouter } from 'vue-router'
+import { useProfileStore } from '@/stores/profile'
 
-const menuItems = [
-  {
-    name: "Margherita Pizza",
-    description: "Classic pizza with tomatoes, mozzarella, and fresh basil.",
-    price: 12
-  },
-  {
-    name: "Pasta Carbonara",
-    description: "Pasta with creamy sauce, pancetta, and parmesan.",
-    price: 15
-  },
-  {
-    name: "Tiramisu",
-    description: "Coffee-flavored Italian dessert with mascarpone cream.",
-    price: 8
-  }
-]
+const profileStore = useProfileStore()
+
+
+
 // ✅ Props preserved exactly with required fields
 const props = defineProps({
   name: {
@@ -54,11 +42,40 @@ const props = defineProps({
     type: Array,
     required: true
   },
-  value: {
+  description: {
+    type: String,
+    required: true
+  },
+  averageRating: {
     type: Number,
     required: true
+
+  },
+  menuItems: {
+    type: Array,
+
+  },
+  cuisineType: {
+    type: String,
+
+  },
+  amenities:{
+    type:Array
+  },
+  checkin:{
+    type : String
+  },
+  checkout:{
+    type:String
+  },
+  stars:{
+    type: Number
   }
 })
+
+
+const amenities  = props.amenities.map((item,index)=>(item.name ))
+console.log('Props:', props)
 
 // Review Dialog state
 const reviewDialogVisible = ref(false)
@@ -104,6 +121,16 @@ const reservationItems = [
 function goToReservation() {
   document.querySelector('#main-reservation-link')?.click()
 }
+
+const galleryImages = computed(() => {
+  return props.images.map((url, index) => ({
+    itemImageSrc: url,
+    thumbnailImageSrc: url,
+    alt: `Image ${index + 1}`
+  }))
+})
+
+
 </script>
 
 <template>
@@ -111,7 +138,7 @@ function goToReservation() {
     <!-- Carousel Section using Galleria -->
     <div class="w-96">
       <Galleria
-        :value="props.images"
+        :value="galleryImages"
         :responsiveOptions="responsiveOptions"
         :numVisible="3"
         :circular="true"
@@ -156,14 +183,20 @@ function goToReservation() {
       <div class="card flex items-center mt-4">
         <div class="font-bold mr-2">Average Rating:</div>
         <Rating
-          :modelValue="props.value"
+          :modelValue="props.averageRating"
           readonly
           :style="{ '--p-rating-icon-size': '25px', '--p-rating-icon-active-color': '#E97451' }"
         />
       </div>
-      <restaurantExra
-      :menu="menuItems"
-      cuisineType="Italian"
+      <restaurantExra v-if="props.type=='restaurant'"
+      :menu="props.menuItems"
+      :cuisineType="props.cuisineType"
+      />
+      <hotelExtra v-if="props.type=='hotel'"
+      :amenities="amenities"
+      :checkInTime="props.checkin"
+      :checkOutTime="props.checkout"
+      :stars="props.stars"
       />
     </div>
 
@@ -171,10 +204,7 @@ function goToReservation() {
     <div class="flex flex-col flex-1">
       <Panel class="h-5/6 w-full flex-none" header="description">
         <p class="m-0">
-          The Panoramic Hotel is a modern, elegant 4-star hotel overlooking the sea, perfect for a romantic, charming vacation, in the enchanting setting of Taormina and the Ionian Sea.
-          The rooms at the Panoramic Hotel are new, well-lit and inviting. Our reception staff will be happy to help you during your stay in Taormina, suggesting itineraries, guided visits and some good restaurants in the historic centre.
-          While you enjoy a cocktail by the swimming pool on the rooftop terrace, you will be stunned by the breathtaking view of the bay of Isola Bella. Here, during your summer stays, our bar serves traditional Sicilian dishes, snacks and salads.
-          At the end of a stairway across from the hotel, the white pebbles on the beach of Isola Bella await you as well as beach facilities with lounge chairs and umbrellas and areas with free access to the pristine clear sea that becomes deep just a few metres from the shore.
+          {{ props.description }}
         </p>
       </Panel>
       <div class="flex gap-10 py-5 justify-center">
