@@ -6,7 +6,7 @@ const props= defineProps( {
         type:String,
         required:true
     },
-    checkInDate: {
+    Date: {
       type: String,
       required: true
     },
@@ -14,15 +14,11 @@ const props= defineProps( {
       type: String,
       required: true
     },
-    numberOfPeople: {
-      type: Number,
-      required: true
-    },
-    roomType: {
+    tableType: {
       type: String,
       required: true
     },
-    checkOutDate: {
+    numberOfPeople: {
       type: String,
       required: true
     }
@@ -39,11 +35,10 @@ const props= defineProps( {
                 </div>
             </template>
             <div >
-                <div class="mb-2"><span class="font-semibold">Check-In Date:</span> {{ props.checkInDate }}</div>
-                <div class="mb-2"><span class="font-semibold">Check-Out Date:</span> {{ props.checkOutDate }}</div>
+                <div class="mb-2"><span class="font-semibold">Date Of The Reservation:</span> {{ props.Date }}</div>
                 <div class="mb-2"><span class="font-semibold">Status:</span> {{ props.status }}</div>
                 <div class="mb-2"><span class="font-semibold">Number of People:</span> {{ props.numberOfPeople }}</div>
-                <div><span class="font-semibold">Room Type:</span> {{ props.roomType }}</div>
+                <div><span class="font-semibold">Table Type:</span> {{ props.tableType }}</div>
             </div>
         </Fieldset>
         

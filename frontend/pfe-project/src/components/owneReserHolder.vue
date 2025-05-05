@@ -1,5 +1,6 @@
 <script setup>
 import owneReservation from './owneReservation.vue';
+import owneReservationR from './owneReservationR.vue';
 </script>
 
 
@@ -9,8 +10,8 @@ import owneReservation from './owneReservation.vue';
     <div class="shadow-lg bg-gray-100 p-5 m-5 border-0 rounded-lg">
     <owneReservation />
     <owneReservation />
-    <owneReservation />
-    <owneReservation />
+    <owneReservationR />
+    <owneReservationR />
     <owneReservation />
 
     </div>

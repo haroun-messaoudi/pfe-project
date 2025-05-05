@@ -45,3 +45,13 @@ class ReviewListView(generics.ListAPIView):
     serializer_class = ListReviewSerializer
     permission_classes = [IsAuthenticated]
     queryset = Review.objects.all()
+
+
+
+class ProfileReviewList(generics.ListAPIView):
+    serializer_class = ListReviewSerializer
+    permission_classes = [IsAuthenticated,IsClient]
+
+    def get_queryset(self):
+        return Review.objects.filter(profile=self.request.user.profile)
+    

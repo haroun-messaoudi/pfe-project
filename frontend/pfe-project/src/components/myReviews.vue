@@ -1,5 +1,23 @@
 <script setup>
 import myReview from '@/components/myReview.vue'
+import api from '@/axios'
+import {ref , onMounted } from 'vue'
+
+const reviews = ref([])
+
+async function fetchReviews(){
+  const response = await api.get(`reviews/profile-reviews/`)
+  console.log(response)
+  reviews.value.push(...response.data)
+  console.log(reviews,"reviews")
+}
+
+
+
+onMounted(()=>{
+  fetchReviews()}
+)
+
 </script>
 
 <template>
@@ -11,7 +29,11 @@ import myReview from '@/components/myReview.vue'
         </h2>
         <!-- cards loop -->
         <div class="flex flex-col  gap-4"> 
-          <myReview />
+          <myReview v-for="(hit, index) in reviews" :key="index" :estaName="hit.establishement"
+           :rating="hit.rating"
+           :comment="hit.content"
+           :date="hit.date_posted"
+           />
         </div>
       </div>
 </section>
