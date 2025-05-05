@@ -74,7 +74,7 @@ const props = defineProps({
 })
 
 
-const amenities  = props.amenities.map((item,index)=>(item.name ))
+const amenities  = props.amenities?.map((item,index)=>(item.name ))
 console.log('Props:', props)
 
 // Review Dialog state

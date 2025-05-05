@@ -9,10 +9,10 @@ const profileStore = useProfileStore()
 
 let text = ""
 
-if(profileStore.establishement.type=="restaurant"){
+if(profileStore.establishement.restaurant=="restaurant"){
   text = "My tables"
 }
-else if(profileStore.establishement.type=="hotel"){
+else if(profileStore.establishement.hotel=="hotel"){
   text = "My rooms"
 }
 
