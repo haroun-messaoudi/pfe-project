@@ -103,7 +103,7 @@ const cities = [
 
 const isLoading = ref(true);
 const isDeleting = ref(false);
-const amenities = ref(establishementStore.amenities);
+const amenities = ref([]);
 const cuisines = ref(establishementStore.cuisines);
 
 const newTable = ref({ capacity: null, description: '', amount: null, location: '',image: null });
@@ -169,11 +169,8 @@ const refreshForm = async () => {
   try {
     await establishementStore.fetchOwnerEstablishement();
     form.value = establishementStore.establishement;
-    await establishementStore.fetchAmenities();
-    amenities.value = establishementStore?.amenities.map(a => ({
-      label: a.label,
-      value: a.value
-    }));
+    const existing = establishementStore.establishement.hotel.amenities; // [{id, name},…]
+    form.value.hotel.amenities = existing.map(a => a.id);
 
     // Debugging: Log the mapped amenities
   } catch (error) {
@@ -190,7 +187,7 @@ const updateHotel = async () => {
       stars: form.value.hotel.stars,
       checkInTime: form.value.hotel.checkInTime,
       checkOutTime: form.value.hotel.checkOutTime,
-      amenities: form.value.hotel.amenities.map((amenity) => amenity.value),
+      amenities: form.value.hotel.amenities.map((amenity) => amenity),
     };
 
     console.log('Payload:', payload);
@@ -350,11 +347,8 @@ const updateRestaurant = async () => {
 onMounted(async () => {
   try {
     await establishementStore.fetchAmenities();
-    amenities.value = establishementStore.amenities.map(a => ({
-      label: a.name,
-      value: a.id
-    }));
-
+    amenities.value = establishementStore.amenities
+    console.log(amenities.value,'am')
     await establishementStore.fetchCuisines();
     cuisines.value = establishementStore.cuisines;
 
@@ -448,6 +442,7 @@ console.log(errors,"eererererererer")
       option-value="value"
       class="w-full"
       placeholder="Select amenities"
+      filter
     />
     <Message v-if="errors.hotel.amenities" severity="error">{{ errors.hotel.amenities }}</Message>
   </div>

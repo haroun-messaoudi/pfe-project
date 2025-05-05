@@ -177,6 +177,7 @@ export const useEstablishementStore = defineStore('establishement', {
       try {
         const response = await api.get('/establishements/amenities/list/')
         this.amenities = response.data.map(item => ({ label: item.name, value: item.id }))
+        console.log(this.amenities,"fetching")
       } catch (error) {
         console.error('Error fetching amenities:', error.response?.data || error.message)
         this.amenities = []
@@ -189,6 +190,7 @@ export const useEstablishementStore = defineStore('establishement', {
         this.clearErrors()
         const response = await api.put('/establishements/update/', data)
         this.establishement = response.data
+        
       } catch (error) {
         this.setErrors(error.response?.data || {})
       }
@@ -199,6 +201,7 @@ export const useEstablishementStore = defineStore('establishement', {
       try {
         this.clearErrors()
         const response = await api.put('/establishements/hotel/update/', hotelData)
+        console.log(response,"hnaaa")
         this.establishement.hotel = response.data
       } catch (error) {
         this.setErrors(error.response?.data || {})
