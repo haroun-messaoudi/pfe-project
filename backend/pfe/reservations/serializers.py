@@ -10,29 +10,64 @@ class HotelReservationSerializer(serializers.ModelSerializer):
         # explicitly list fields (you can adjust read_only_fields as needed)
         fields = [
             'id',
-            'hotel',
+            'room',
             'guest',
             'status',
-            'checkeIn_date',
-            'checkeOut_date',
-            'numberOfPeople',
-            'roomType',
+            'check_in_date',
+            'check_out_date',
+            'number_of_people',
             'created_at',
+ 
         ]
+        
         read_only_fields = ['id', 'status', 'created_at']
 
-    def validate(self, attrs):
+    def validate(self, data):
         """
-        Ensure that check-in is before check-out.
+        Ensure no overlapping booking exists for this room.
         """
-        check_in = attrs.get('checkeIn_date', getattr(self.instance, 'checkeIn_date', None))
-        check_out = attrs.get('checkeOut_date', getattr(self.instance, 'checkeOut_date', None))
+        room       = data.get('room')
+        start      = data.get('check_in_date')
+        end        = data.get('check_out_date')
+        exclude_id = getattr(self.instance, 'pk', None)
 
-        if check_in and check_out and check_in >= check_out:
-            raise serializers.ValidationError({
-                'checkeOut_date': 'check‐out must be after check‐in.'
-            })
-        return attrs
+        overlap_qs = HotelReservation.objects.filter(
+            room=room,
+            status__in=['pending', 'confirmed'],
+            check_out_date__gt=start,
+            check_in_date__lt=end
+        )
+        if exclude_id:
+            overlap_qs = overlap_qs.exclude(pk=exclude_id)
+
+        if overlap_qs.exists():
+            raise serializers.ValidationError(
+                "That room is already booked for the selected dates."
+            )
+        return data
+    # def validate(self, attrs):
+    #     """
+    #     Ensure that check-in is before check-out.
+    #     """
+    #     check_in = attrs.get('checkeIn_date', getattr(self.instance, 'checkeIn_date', None))
+    #     check_out = attrs.get('checkeOut_date', getattr(self.instance, 'checkeOut_date', None))
+        
+    #     if check_in and check_out and check_in >= check_out:
+    #         raise serializers.ValidationError({
+    #             'checkeOut_date': 'check‐out must be after check‐in.'
+    #         })
+        
+    #     room = attrs.get('room' , getattr(self.instance , 'room',None))
+    #     numberOfPeople = attrs.get('numberOfPeople' , getattr(self.instance , 'numberOfPeople',None))
+    #     if numberOfPeople > room.capacity :
+    #         raise serializers.ValidationError ({
+    #             'numberOfPeople': f"This room can only accommodate up to {room.capacity} guests."
+    #         })
+        
+    #     ReservationType= attrs.get('ReservationType',getattr(self.instance , 'ReservationType',None))
+
+    #     return attrs
+    
 
     def create(self, validated_data):
         return super().create(validated_data)
@@ -47,15 +82,13 @@ class RestaurantReservationSerializer(serializers.ModelSerializer):
         model = RestaurantReservation
         fields = [
             'id',
-            'restaurant',
+            'table',
             'guest',
             'status',
             'date',
             'numberOfPeople',
-            'tableType',
             'created_at',
         ]
         read_only_fields = ['id', 'status', 'created_at']
 
-    # if you need any cross‐field validation (e.g. party size limits), you
-    # can add a validate() here
+    

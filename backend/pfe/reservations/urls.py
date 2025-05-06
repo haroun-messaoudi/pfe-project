@@ -1,7 +1,7 @@
 # reservations/urls.py
 
 from django.urls import path
-from .views      import  ListHotelReservations, ListRestaurantReservations, AddHotelReservation,AddRestaurantReservation
+from .views      import  ListHotelReservations,DeleteAnyReservation,CancelReservation, ListRestaurantReservations, AddHotelReservation,AddRestaurantReservation
 
 
 urlpatterns = [
@@ -21,5 +21,17 @@ urlpatterns = [
       'restaurants/<int:establishment_id>/add',
       AddRestaurantReservation.as_view(),
       name='rest-res-add'
+    ),
+
+    
+    path(
+      '<str:type>/<int:reservation_id>/delete',
+      DeleteAnyReservation.as_view(),
+      name='delete-reservation'
+    ),
+    path(
+      '<str:type>/<int:reservation_id>/cancel',
+      CancelReservation.as_view(),
+      name='cancel-reservation'
     ),
 ]
