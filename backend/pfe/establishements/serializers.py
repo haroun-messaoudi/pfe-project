@@ -4,7 +4,8 @@ from rest_framework.exceptions import ValidationError
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from reviews.serializers import ReviewSerializer
-
+from phonenumber_field.validators import validate_international_phonenumber
+import re
 class AmenitySerializer(ModelSerializer):
     class Meta:
         model = Amenity
@@ -187,7 +188,16 @@ class EstablishementSerializer(ModelSerializer):
         for image_data in images_data.getlist("images"):
             Images.objects.create(establishement=establishement, image=image_data)
         return establishement
-
+    def validate(self, attrs):
+        if self.instance is None:
+            # creation
+            if not self.initial_data.get('images'):
+                raise serializers.ValidationError({"images": "You must provide at least one image."})
+        else:
+            # update logic
+            if not Images.objects.filter(establishement=self.instance).exists():
+                raise serializers.ValidationError({"images": "Establishment must have at least one image."})
+        return attrs
 
 class RestaurantDetailSerializer(ModelSerializer):
     menu_items = MenuItemSerializer(many=True, read_only=True) 
@@ -244,3 +254,4 @@ class EstablishementDetailsSerializer(ModelSerializer):
         else:
             representation["details"] = None
         return representation
+    

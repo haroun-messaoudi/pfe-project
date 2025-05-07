@@ -11,6 +11,13 @@ class ProfileSerializer(serializers.ModelSerializer):
             "pk":{"read_only":True}
         }
 
+    def validate_phone_number(self, value):
+        # Convert to string if needed
+        if isinstance(value, str) and value.startswith("0"):
+            # Replace leading 0 with +213
+            value = "+213" + value[1:]
+        # Let django-phonenumber-field handle the rest
+        return to_python(value)
     #def create(self, validated_data):
     #     user = self.context['request'].user
     #     profile = Profile.objects.create(user=user,**validated_data)

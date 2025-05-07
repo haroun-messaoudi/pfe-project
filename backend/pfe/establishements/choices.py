@@ -57,5 +57,5 @@ ALGERIAN_CITIES = (
     ("Tamridjet", "Tamridjet"), ("Tamsa", "Tamsa"), ("Tamtert", "Tamtert"), ("Tamza", "Tamza"), ("Tamzoura", "Tamzoura"), ("Taoudmout", "Taoudmout"), ("Taougrit", "Taougrit"), ("Taoura", "Taoura"),
     ("Taourga", "Taourga"), ("Taourirt Ighil", "Taourirt Ighil"), ("Tarik Ibn Ziad", "Tarik Ibn Ziad"), ("Tarmount", "Tarmount"), ("Taskriout", "Taskriout"), ("Taxlent", "Taxlent"), ("Taya", "Taya"),
     ("Tazgait", "Tazgait"), ("Tazmalt", "Tazmalt"), ("Tazrouk", "Tazrouk"), ("Tebesbest", "Tebesbest"), ("Tébessa", "Tébessa"), ("Telagh", "Telagh"), ("Teleghma", "Teleghma"), ("Timokten", "Timokten"),
-    ("Touggourt", "Touggourt")
+    ("Touggourt", "Touggourt"),("Algiers",'Algiers'),("Blida","Blida")
 )

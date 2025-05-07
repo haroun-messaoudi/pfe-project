@@ -122,6 +122,7 @@ const form = ref({
     city: '',
     type: '',
     email: '',
+    phone_number:'',
     images: [],
   },
   hotel: {
@@ -189,8 +190,13 @@ const createEstablishment = async () => {
   formData.append('type', form.value.establishment.type)
   formData.append('city', form.value.establishment.city)
   formData.append('profile', userStore.profileId)
-  formData.append('email',form.value.establishment.email) // Use profileId from userStore
-
+  formData.append('email',form.value.establishment.email)
+  formData.append('phone_number',form.value.establishment.phone_number)
+   // Use profileId from userStore
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}:`, value)
+  }
+  
   for (const image of form.value.establishment.images) {
     formData.append('images', image)
   }
@@ -222,6 +228,7 @@ const createEstablishment = async () => {
   } catch (error) {
     console.error('Error creating establishment:', error.response?.data || error.message)
     errors.value = error.response?.data || {}
+
     globalError.value = error.response?.data?.detail || 'An error occurred while creating the establishment.'
   }
 }
@@ -301,6 +308,7 @@ const createRestaurant = async () => {
     router.push('/')
   } catch (error) {
     errors.value = error.response?.data || {}
+    console.log(error)
     globalError.value = error.response?.data?.detail || 'An error occurred while creating the restaurant.'
   }
 }
@@ -359,7 +367,11 @@ onMounted(() => {
         <InputText v-model="form.establishment.email" class="w-full" />
         <Message v-if="errors.email" severity="error" class="mt-2">{{ errors.email[0] }}</Message>
       </div>
-
+      <div>
+        <label class="block font-medium">Phone number</label>
+        <InputText v-model="form.establishment.phone_number" class="w-full" />
+        <Message v-if="errors.phone_number" severity="error" class="mt-2">{{ errors.phone_number[0] }}</Message>
+      </div>
       <div>
         <label class="block font-medium">Images</label>
         <FileUpload
@@ -467,7 +479,9 @@ onMounted(() => {
                 class="w-full"
                 placeholder="Enter menu item name"
               />
+              
             </div>
+            <Message v-if="errors.menu?.[index]?.name " severity="error" class="mt-2">{{ errors.menu?.[index]?.name?.[0] }}</Message>
             <div>
               <label class="block text-sm font-medium">Description</label>
               <InputText
@@ -485,6 +499,7 @@ onMounted(() => {
                 :min="0"
               />
             </div>
+            <Message v-if="errors.menu?.[index]?.price " severity="error" class="mt-2">{{ errors.menu?.[index]?.price?.[0] }}</Message>
             <Button
               label="Remove Item"
               class="p-button-danger mt-2"
@@ -496,9 +511,8 @@ onMounted(() => {
             class="p-button-success mt-4"
             @click="addMenuItem"
           />
-          <Message v-if="errors.menu" severity="error" class="mt-2">{{ errors.menu[0] }}</Message>
         </div>
-
+        
         <Button type="submit" label="Create Restaurant" class="w-full" />
       </form>
     </div>
