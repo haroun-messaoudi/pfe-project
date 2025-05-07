@@ -14,10 +14,7 @@ onMounted(() => {
 });
 
 
-const userStore = useUserStore()
-const searchStore = useSearchStore()
-console.log("resulta", searchStore.results)
-console.log(userStore.isAuthenticated)
+
 </script>
 
 <template>

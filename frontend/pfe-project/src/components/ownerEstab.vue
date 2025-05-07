@@ -123,7 +123,7 @@ function goToReservation() {
 }
 
 const galleryImages = computed(() => {
-  return props.images.map((url, index) => ({
+  return props.images?.map((url, index) => ({
     itemImageSrc: url,
     thumbnailImageSrc: url,
     alt: `Image ${index + 1}`

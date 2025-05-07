@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import api from '@/axios'
 import { reactive } from 'vue'
+import { useSearchStore } from './searchStore'
 
 export const useEstablishementStore = defineStore('establishement', {
   state: () => ({
@@ -172,7 +173,23 @@ export const useEstablishementStore = defineStore('establishement', {
         this.cuisines = []
       }
     },
-
+    async searchEstablishements(query = '', filters = []) {
+      try {
+        // join your array of filter strings into a comma‐separated list
+        const filterString = filters.length ? filters.join(',') : ''
+        const response = await api.get('/establishements/search/', {
+          params: {
+            q:       query,        // full-text query
+            filters: filterString  // e.g. "type:hotel,city:Algiers"
+          }
+        })
+        // Return the whole body so your setSearchResults can pick off hits, nbHits, etc.
+        return response.data
+      } catch (err) {
+        console.error('Error searching establishments:', err.response?.data || err.message)
+        throw err
+      }
+    },
     async fetchAmenities() {
       try {
         const response = await api.get('/establishements/amenities/list/')

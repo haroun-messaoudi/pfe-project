@@ -12,6 +12,7 @@ import qstHolder from './qstHolder.vue'
 import restaurantExra from './restaurantExra.vue'
 import SplitButton from 'primevue/splitbutton'
 import { useRoute, useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import Message from 'primevue/message'
 import api from '@/axios'
 import { Toast } from 'primevue'
@@ -33,6 +34,11 @@ const props = defineProps({
   menuItems: Array,
   cuisineType: String,
 })
+
+const userStore = useUserStore()
+
+
+
 
 // Review Dialog state
 const reviewDialogVisible = ref(false)
@@ -171,14 +177,14 @@ async function submitReview() {
       <Panel class="h-5/6 w-full flex-none min-w-full" header="description">
         <p class="m-0">{{ props.description }}</p>
       </Panel>
-      <div class="flex gap-10 py-5 justify-center">
+      <div class="flex gap-10 py-5 justify-center" v-if="userStore.isAuthenticated">
         <Button label="Add A Review" severity="success" raised @click="reviewDialogVisible = true" />
         <SplitButton label="Make a Reservation" :model="reservationItems" raised severity="info" />
       </div>
     </div>
 
     <!-- Review Dialog -->
-    <Dialog v-model:visible="reviewDialogVisible" modal header="Add Your Review" :style="{ width: '30rem' }">
+    <Dialog v-model:visible="reviewDialogVisible"  modal header="Add Your Review" :style="{ width: '30rem' }">
       <template #header>
         <div class="inline-flex items-center justify-center gap-2">
           <i class="pi pi-comment text-xl"></i>

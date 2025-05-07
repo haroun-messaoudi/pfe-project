@@ -30,7 +30,11 @@ const logout = async () => {
 <RouterLink to="/">
 <img class="h-20 w-auto" src="@/assets/img/logo.png" />
 </RouterLink>
-<Button label="Logout" severity="warn" rounded @click="logout" />
+<Button label="Logout" severity="warn" rounded @click="logout" v-if="userStore.isAuthenticated"  />
+<RouterLink to="/login">
+  <Button label="Login" severity="warn" rounded v-if="!userStore.isAuthenticated"  />
+</RouterLink>
+
 
 </div>    
 </template>

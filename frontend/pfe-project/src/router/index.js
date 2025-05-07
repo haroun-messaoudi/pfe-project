@@ -48,7 +48,7 @@ const router = createRouter({
         let componentName = 'DefaultHomePage';
         if (userStore.profileRole === 'owner') {
           componentName = 'ownerPage';
-        } else if (userStore.profileRole === 'client') {
+        } else {
           componentName = 'homepage';
         }
   
