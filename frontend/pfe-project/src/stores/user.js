@@ -87,36 +87,30 @@ export const useUserStore = defineStore('user', {
     },
 
     async logout() {
-
       try {
         if (this.refreshToken) {
-          await api.post('accounts/blacklist/', {
-            refresh: this.refreshToken, // Use the store's state
-          })
+          await api.post('accounts/blacklist/', { refresh: this.refreshToken })
         }
-      } catch (error) {
-        console.error('Error during logout:', error)
+      } catch (err) {
+        console.error(err)
       } finally {
-        this.acessToken = null
-        this.refreshToken = null
-        this.profileId = null
-        this.isAuthenticated = false
-        this.profileRole = null
+        const userStore = useUserStore()
         const profileStore = useProfileStore()
-        const establishementStore = useEstablishementStore()
-        profileStore.firstName=null
-        profileStore.lastName=null
-        profileStore.phoneNumber=null
-        profileStore.establishement=null
-        profileStore.establishementReviews = []
-        profileStore.establishementRooms = []
-        profileStore.establishementTables = []
-
-
-        establishementStore.establishement = null
+        const estabStore   = useEstablishementStore()
+    
+        // clear tokens + auth state
+        userStore.$reset()
+    
+        // clear your other stores
+        profileStore.$reset()
+        estabStore.$reset()
+    
+        // also clear any default axios headers
+        delete api.defaults.headers.common['Authorization']
+    
         router.push({ name: 'Home' })
       }
-    },
+    }
   },
   persist: true, // Enable persistence
 })
