@@ -5,9 +5,9 @@ import { onMounted } from 'vue';
 import { useProfileStore } from '@/stores/profile';
 const profileStore = useProfileStore()
 
-onMounted(() => {
+onMounted(async() => {
   // Fetch or initialize any data needed for the component
-  profileStore.fetchEstablishementReviews()
+  await profileStore.fetchEstablishementReviews()
   console.log(profileStore.establishement.reviews)
 })
 </script>

@@ -14,8 +14,8 @@ async function fetchReviews(){
 
 
 
-onMounted(()=>{
-  fetchReviews()}
+onMounted(async()=>{
+  await fetchReviews()}
 )
 
 </script>

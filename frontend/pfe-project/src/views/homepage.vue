@@ -8,9 +8,9 @@ import { onMounted } from 'vue';
 
 const topEstablishmentsStore = useTopEstablishmentsStore();
 
-onMounted(() => {
-  topEstablishmentsStore.fetchBestHotels(); // Fetch best-rated hotels
-  topEstablishmentsStore.fetchBestRestaurants(); // Fetch best-rated restaurants
+onMounted(async() => {
+  await topEstablishmentsStore.fetchBestHotels(); // Fetch best-rated hotels
+  await topEstablishmentsStore.fetchBestRestaurants(); // Fetch best-rated restaurants
 });
 
 

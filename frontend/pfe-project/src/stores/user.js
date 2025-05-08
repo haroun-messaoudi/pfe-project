@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import api from '@/axios' // Your custom Axios instance with interceptors
+import { useEstablishementStore } from './establishement'
+import { useProfileStore } from './profile'
+import router from '@/router' 
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -84,6 +87,7 @@ export const useUserStore = defineStore('user', {
     },
 
     async logout() {
+
       try {
         if (this.refreshToken) {
           await api.post('accounts/blacklist/', {
@@ -97,6 +101,20 @@ export const useUserStore = defineStore('user', {
         this.refreshToken = null
         this.profileId = null
         this.isAuthenticated = false
+        this.profileRole = null
+        const profileStore = useProfileStore()
+        const establishementStore = useEstablishementStore()
+        profileStore.firstName=null
+        profileStore.lastName=null
+        profileStore.phoneNumber=null
+        profileStore.establishement=null
+        profileStore.establishementReviews = []
+        profileStore.establishementRooms = []
+        profileStore.establishementTables = []
+
+
+        establishementStore.establishement = null
+        router.push({ name: 'Home' })
       }
     },
   },

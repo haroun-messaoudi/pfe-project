@@ -1,6 +1,6 @@
 <script setup>
 import Button from 'primevue/button';
-import { RouterLink } from 'vue-router';
+import { RouterLink} from 'vue-router';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
@@ -8,8 +8,7 @@ const userStore = useUserStore();
 const logout = async () => {
   try {
     await userStore.logout();
-    // Redirect to the login page or home page after logout
-    window.location.href = '/login';
+
   } catch (error) {
     console.error('Logout failed:', error);
   }
