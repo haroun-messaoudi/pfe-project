@@ -45,6 +45,47 @@ class EstablishementDetailView(generics.RetrieveAPIView):
         if not hasattr(user_profile, "establishement"):
             raise NotFound("No establishment is associated with the current user.")
         return user_profile.establishement
+    
+class EstablishementTableListView(generics.ListAPIView):
+    """
+    GET /establishments/<id>/tables/
+    Returns all Table objects belonging to this establishment's restaurant.
+    """
+    serializer_class   = serializers.TableSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        estab_id = self.kwargs.get('establishment_id')
+        if estab_id is None:
+            raise NotFound("No establishment_id provided in URL.")
+        try:
+            estab =Establishement.objects.get(id=estab_id)
+        except Establishement.DoesNotExist:
+            raise NotFound(f"Establishment with id={estab_id} not found.")
+
+        # filter by the related Restaurant
+        return Table.objects.filter(restaurant=estab.restaurant)
+
+
+class EstablishementRoomListView(generics.ListAPIView):
+    """
+    GET /establishments/<id>/rooms/
+    Returns all Room objects belonging to this establishment's hotel.
+    """
+    serializer_class   = serializers.RoomSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        estab_id = self.kwargs.get('establishment_id')
+        if estab_id is None:
+            raise NotFound("No establishment_id provided in URL.")
+        try:
+            estab = Establishement.objects.get(id=estab_id)
+        except Establishement.DoesNotExist:
+            raise NotFound(f"Establishment with id={estab_id} not found.")
+
+        # filter by the related Hotel
+        return Room.objects.filter(hotel=estab.hotel)
 
 class HotelDetailView(generics.RetrieveAPIView):
     serializer_class = serializers.HotelDetailsSerializer
@@ -72,7 +113,7 @@ class RestaurantListView(generics.ListAPIView):
 
 
 class EstablishementUpdateView(generics.UpdateAPIView):
-    serializer_class = serializers.EstablishementSerializer
+    serializer_class = serializers.establishmentUpdateSerializer
     permission_classes = [permissions.IsAuthenticated,IsAssociatedWithEstablishement]
 
     def get_object(self):

@@ -8,8 +8,10 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from .models import Profile
 from .serializers import UserProfileSerializer,ProfileSerializer
-
-# Create your views here.
+from django.urls import reverse_lazy
+from django.shortcuts       import render, redirect
+from django.contrib.auth    import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 
 """
 All the work is done in the serializers.py
@@ -56,3 +58,24 @@ class UserDetails(generics.RetrieveAPIView):
     def get_object(self):
         # Return the currently logged-in user
         return self.request.user
+    
+
+
+def login_view(request):
+    # if they’re already logged in, send them home
+    if request.user.is_authenticated:
+        return redirect('/')  
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            # log the user in
+            user = form.get_user()
+            login(request, user)
+            # honor “next=” or fall back to /
+            return redirect(request.GET.get('next', '/'))
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'login.html', {'form': form})
+

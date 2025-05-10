@@ -114,3 +114,6 @@ docker-compose.yml
 *.swo
 *.sublime-workspace
 *.sublime-project
+
+#MIGRARIONS
+migrations/

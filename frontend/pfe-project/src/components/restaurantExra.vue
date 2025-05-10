@@ -16,7 +16,7 @@
           <div v-for="(item, index) in menu" :key="index" class="border-b pb-2">
             <div class="font-bold text-base">{{ item.name}}</div>
             <div class="text-sm text-gray-500 mb-1">{{ item.description }}</div>
-            <div class="text-sm font-medium text-green-700">${{ item.price }}</div>
+            <div class="text-sm font-medium text-green-700">{{ item.price }} DA</div>
           </div>
         </div>
         <template #footer>

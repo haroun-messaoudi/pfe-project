@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'reviews',
     'algoliasearch_django',
     'django_seed',
+    'stats'
 ]
 
 MIDDLEWARE = [
@@ -170,6 +171,8 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+CELERY_BROKER_URL = 'memory://'
+CELERY_TASK_ALWAYS_EAGER = True
 
 ALGOLIA = {
    'APPLICATION_ID': os.getenv('ALGOLIA_APP_ID'),
@@ -185,7 +188,8 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
-    "http://localhost:5174"
+    "http://localhost:5174",
+    "http://127.0.0.1:8000",
 ]
 
 

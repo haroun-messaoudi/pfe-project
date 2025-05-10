@@ -1,19 +1,19 @@
 <script setup>
 import { ref, defineProps } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Rating from 'primevue/rating'
 import Galleria from 'primevue/galleria'
-import HotelExtra from './hotelExtra.vue'
-import Card from './card.vue'
 import Panel from 'primevue/panel'
-import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
-import Textarea from 'primevue/textarea'
-import qstHolder from './qstHolder.vue'
-import restaurantExra from './restaurantExra.vue'
-import SplitButton from 'primevue/splitbutton'
-import { useRoute, useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/user'
 import Message from 'primevue/message'
+import SplitButton from 'primevue/splitbutton'
+import Button from 'primevue/button'
+import HotelExtra from './hotelExtra.vue'
+import restaurantExtra from './restaurantExra.vue'
+import hotelReservationDialog from './hotelReservationDialog.vue'
+import restaurantReservationDialog from './restaurantReservationDialog.vue'
+import qstHolder from './qstHolder.vue'
+import { useUserStore } from '@/stores/user'
 import api from '@/axios'
 import { Toast } from 'primevue'
 
@@ -36,121 +36,108 @@ const props = defineProps({
 })
 
 const userStore = useUserStore()
+const route = useRoute()
+const router = useRouter()
 
-
-
-
-// Review Dialog state
+// --- Review dialog state & methods ---
 const reviewDialogVisible = ref(false)
 const reviewText = ref('')
 const reviewAnswers = ref([])
-const route = useRoute()
+const errorMessages = ref([])
+
 function CloseReviewDialog() {
   reviewAnswers.value = []
-  reviewText.value    = ''
+  reviewText.value = ''
+  errorMessages.value = []
   reviewDialogVisible.value = false
 }
-const errorMessages = ref([])
+
 async function submitReview() {
   try {
     const id = route.params.id
-    const payload = {
+    await api.post(`/reviews/add/${id}/`, {
       content: reviewText.value,
       answers: reviewAnswers.value.value,
-    }
-
-    console.log('Submitting Review Payload:', payload) // Debugging payload
-
-
-    const response = await api.post(`/reviews/add/${id}/`, payload)
-    console.log('Review submitted successfully:', response.data)
-
-    // Reset form
-    reviewText.value = ''
-    reviewAnswers.value = []
-    reviewDialogVisible.value = false
-    errorMessages.value = [] 
-    Toast.add({
-      severity: 'success',
-      summary: 'Success',
-      detail: 'Review submitted successfully!',
-      life: 3000,
-      
     })
-  } catch (error) {
-  const errData = error.response?.data
-  console.error('Failed to submit review:', errData || error)
-
-  errorMessages.value = [] // Clear previous errors
-
-  if (errData) {
-    if (errData.content) {
-      errorMessages.value.push(`please type a review`)
-    }
-    if (errData.answers) {
-      errorMessages.value.push(`please fill all the answers`)
-    }
-    if(errData.detail){
-      errorMessages.value.push(errData.detail[0])
-    }
-  } else {
-    errorMessages.value.push = ['An unexpected error occurred. Please try again.']
+    CloseReviewDialog()
+    Toast.add({ severity: 'success', summary: 'Success', detail: 'Review submitted!', life: 3000 })
+  } catch (err) {
+    const data = err.response?.data || {}
+    errorMessages.value = []
+    if (data.content)    errorMessages.value.push('Please type a review.')
+    if (data.answers)    errorMessages.value.push('Please fill all the answers.')
+    if (data.detail)     errorMessages.value.push(data.detail[0])
+    if (!err.response)   errorMessages.value.push('Unexpected error. Please try again.')
   }
 }
-  console.log(errorMessages.value[0]) // Debugging error messages
 
+// --- Navigation & Quick-reservation state & methods ---
+const hotelDialogVisible = ref(false)
+const restaurantDialogVisible = ref(false)
+
+function navigateToReservation() {
+  const id = route.params.id
+  if (props.type === 'hotel') {
+    router.push({ name: 'roomsList', params: { id } })
+  } else {
+    router.push({ name: 'tablesList', params: { id } })
+  }
+}
+
+function quickReservation() {
+  if (props.type === 'hotel') {
+    hotelDialogVisible.value = true
+  } else {
+    restaurantDialogVisible.value = true
+  }
+}
+
+const reservationItems = [
+  {
+    label: 'Quick Reservation',
+    icon: 'pi pi-fast-forward',
+    command: quickReservation
+  }
+]
+
+// optional callback when a quick reservation completes
+function onReserved() {
+  hotelDialogVisible.value = false
+  restaurantDialogVisible.value = false
 }
 </script>
 
 <template>
-  <div class="flex gap-4 bg-orange-100 p-5 m-5 border-0 rounded-lg">
-    <!-- Carousel Section using Galleria -->
+  <div class="flex gap-4 bg-orange-100 p-5 m-5 rounded-lg">
+    <!-- Carousel -->
     <div class="w-96">
       <Galleria
         :value="props.images"
         :responsiveOptions="responsiveOptions"
         :numVisible="3"
-        :circular="true"
-        :showItemNavigators="true"
-        :showThumbnails="true"
+        circular
+        showItemNavigators
+        showThumbnails
         containerStyle="max-width: 384px"
       >
-        <template #item="slotProps">
-          <img
-            :src="slotProps.item.itemImageSrc"
-            :alt="slotProps.item.alt"
-            class="w-full h-96 object-cover rounded-lg"
-          />
+        <template #item="{ item }">
+          <img :src="item.itemImageSrc" :alt="item.alt" class="w-full h-96 object-cover rounded-lg" />
         </template>
-        <template #thumbnail="slotProps" class="p-2">
-          <img
-            :src="slotProps.item.thumbnailImageSrc"
-            :alt="slotProps.item.alt"
-            class="object-cover h-20 w-20 rounded-md"
-          />
+        <template #thumbnail="{ item }">
+          <img :src="item.thumbnailImageSrc" :alt="item.alt" class="object-cover h-20 w-20 rounded-md" />
         </template>
       </Galleria>
     </div>
 
-    <!-- Establishment Info Section -->
+    <!-- Info -->
     <div class="px-10">
       <h1 class="font-serif font-bold text-4xl mb-2">{{ props.name }}</h1>
       <div class="mb-2">{{ props.type }}</div>
-      <div class="flex mb-2">
-        <div class="font-bold mr-2">Phone Number:</div>
-        <div>{{ props.phone }}</div>
-      </div>
-      <div class="flex mb-2">
-        <div class="font-bold mr-2">E-mail:</div>
-        <div>{{ props.email }}</div>
-      </div>
-      <div class="flex mb-2">
-        <div class="font-bold mr-2">Location:</div>
-        <div>{{ props.location }}</div>
-      </div>
-
+      <div class="flex mb-2"><span class="font-bold mr-2">Phone:</span>{{ props.phone }}</div>
+      <div class="flex mb-2"><span class="font-bold mr-2">E-mail:</span>{{ props.email }}</div>
+      <div class="flex mb-2"><span class="font-bold mr-2">Location:</span>{{ props.location }}</div>
       <div class="card flex items-center mt-4">
-        <div class="font-bold mr-2">Average Rating:</div>
+        <span class="font-bold mr-2">Avg. Rating:</span>
         <Rating
           :modelValue="props.value"
           readonly
@@ -159,64 +146,84 @@ async function submitReview() {
       </div>
 
       <HotelExtra
-        v-if="props.type == 'hotel'"
+        v-if="props.type === 'hotel'"
         :amenities="props.amenities"
         :checkInTime="props.checkin"
         :checkOutTime="props.checkout"
         :stars="props.stars"
       />
-      <restaurantExra
-        v-if="props.type == 'restaurant'"
+      <restaurantExtra
+        v-else
         :menu="props.menuItems"
         :cuisineType="props.cuisineType"
       />
     </div>
 
-    <!-- Description and Buttons -->
+    <!-- Description & Actions -->
     <div class="flex flex-col flex-1">
-      <Panel class="h-5/6 w-full flex-none min-w-full" header="description">
+      <Panel class="h-5/6 w-full" header="Description">
         <p class="m-0">{{ props.description }}</p>
       </Panel>
-      <div class="flex gap-10 py-5 justify-center" v-if="userStore.isAuthenticated">
-        <Button label="Add A Review" severity="success" raised @click="reviewDialogVisible = true" />
-        <SplitButton label="Make a Reservation" :model="reservationItems" raised severity="info" />
+      <div class="flex gap-6 py-5 justify-center" v-if="userStore.isAuthenticated">
+        <Button label="Add A Review" severity="warn" raised @click="reviewDialogVisible = true" />
+
+        <SplitButton v-if="props.type == 'hotel'"
+          label="Make a Reservation"
+          icon="pi pi-calendar"
+          severity="info"
+          raised
+          :model="reservationItems"
+          @click="navigateToReservation"
+        />
+        <Button v-else
+          label="Make a Reservation"
+          icon="pi pi-calendar"
+          severity="info"
+          @click="navigateToReservation"
+        />
       </div>
     </div>
 
     <!-- Review Dialog -->
-    <Dialog v-model:visible="reviewDialogVisible"  modal header="Add Your Review" :style="{ width: '30rem' }">
+    <Dialog v-model:visible="reviewDialogVisible" modal header="Add Your Review" style="width:30rem">
       <template #header>
-        <div class="inline-flex items-center justify-center gap-2">
+        <div class="inline-flex items-center gap-2">
           <i class="pi pi-comment text-xl"></i>
           <span class="font-bold">Leave a Review</span>
         </div>
       </template>
 
-      <span class="text-surface-500 dark:text-surface-400 block mb-4">Tell us what you think about this place.</span>
-      <div>
-        <div v-if="errorMessages.length" class="mb-4">
-          <Message
-            v-if="errorMessages.length"
-            :key="index"
-            severity="error"
-            
-          >
-          {{ errorMessages[0] }}
-          </Message>
-        </div>
+      <span class="block mb-4">Tell us what you think about this place.</span>
 
-        <qstHolder
-          @update-answers="(val) => {
-            reviewAnswers.value = val
-            console.log('Received Answers in establishementCard:', val)
-          }"
-          v-model="reviewText"
-        />
+      <div v-if="errorMessages.length" class="mb-4">
+        <Message
+          v-for="(msg,i) in errorMessages"
+          :key="i"
+          severity="error"
+          text
+        >
+          {{ msg }}
+        </Message>
       </div>
+
+      <qstHolder @update-answers="val => reviewAnswers.value = val" v-model="reviewText" />
+
       <template #footer>
-        <Button label="Cancel" text severity="secondary" @click="CloseReviewDialog" />
-        <Button label="Submit" severity="success" @click="submitReview" />
+        <Button label="Cancel" severity="warn" text @click="CloseReviewDialog" />
+        <Button label="Submit" severity="warn" @click="submitReview" />
       </template>
     </Dialog>
+
+    <!-- Quick‐reservation Dialogs -->
+    <hotelReservationDialog
+      v-model:visible="hotelDialogVisible"
+      :establishmentId="route.params.id"
+      @reserved="onReserved"
+    />
+    <restaurantReservationDialog
+      v-model:visible="restaurantDialogVisible"
+      :establishmentId="route.params.id"
+      @reserved="onReserved"
+    />
   </div>
 </template>

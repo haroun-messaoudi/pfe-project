@@ -255,3 +255,15 @@ class EstablishementDetailsSerializer(ModelSerializer):
             representation["details"] = None
         return representation
     
+
+
+
+
+class establishmentUpdateSerializer(ModelSerializer):
+    class Meta:
+        model = Establishement
+        fields = '__all__'
+        extra_kwargs = {
+            "average_rating": {"read_only": True},
+            "profile": {"read_only": True},
+        }

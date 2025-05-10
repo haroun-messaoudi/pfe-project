@@ -29,16 +29,16 @@ const emit = defineEmits(['update:modelValue', 'update-answers'])
 const reviewText = ref(props.modelValue)
 watch(reviewText, val => emit('update:modelValue', val))
 
-const establishment = computed(() => {
-  const id = route.params.id
-  return (
-    searchStore.results.find(item => item.objectID === id) ||
-    topEstablishmentsStore.bestHotels.hits?.find(item => item.objectID === id) ||
-    topEstablishmentsStore.bestRestaurants.hits?.find(item => item.objectID === id)
-  )
-})
 
 onMounted(async () => {
+  const establishment = computed(() => {
+    const id = route.params.id
+    return (
+      searchStore.results.find(item => item.objectID === id) ||
+      topEstablishmentsStore.bestHotels.hits?.find(item => item.objectID === id) ||
+      topEstablishmentsStore.bestRestaurants.hits?.find(item => item.objectID === id)
+    )
+  })
   if (establishment.value?.type === 'restaurant') {
     await questionsStore.fetchRestaurantQuestions()
     questions.value = questionsStore.restaurantQuestions

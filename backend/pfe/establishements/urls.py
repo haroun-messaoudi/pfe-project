@@ -29,6 +29,8 @@ urlpatterns = [
     path("best-restaurants/", views.BestRatedRestaurantsView.as_view(), name="best-restaurants"),
     path("best-hotels/", views.BestRatedHotelsView.as_view(), name="best-hotels"),
     path("tables-and-rooms/",views.EstablishementTablesAndRoomsView.as_view(),name="establishement-tables-rooms"),
+    path("<int:establishment_id>/tables/",views.EstablishementTableListView.as_view(),name="establishement-tables"),
+    path("<int:establishment_id>/rooms/", views.EstablishementRoomListView.as_view(),name="establishement_rooms"),
     path(
       '<int:pk>/images/',
       views.EstablishmentImagesView.as_view(),

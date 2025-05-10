@@ -89,6 +89,7 @@ onMounted(async () => {
     <profilenav :buttonStatus="false" />
     <div v-if="establishment">
       <establishementCard
+        :id= "establishment.id"
         :name="establishment.name"
         :type="establishment.type"
         :phone="establishment.phone_number"

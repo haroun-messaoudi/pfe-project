@@ -207,9 +207,13 @@ export const useEstablishementStore = defineStore('establishement', {
         this.clearErrors()
         const response = await api.put('/establishements/update/', data)
         this.establishement = response.data
-        
       } catch (error) {
-        this.setErrors(error.response?.data || {})
+        // grab either the nested `errors` or the top‐level data
+        const backend = error.response?.data.errors
+                    || error.response?.data
+                    || {}
+        this.setErrors(backend)     // ← pass it straight through
+        throw error
       }
     },
 
@@ -221,7 +225,8 @@ export const useEstablishementStore = defineStore('establishement', {
         console.log(response,"hnaaa")
         this.establishement.hotel = response.data
       } catch (error) {
-        this.setErrors(error.response?.data || {})
+        this.setErrors({ updateHotel: error.response?.data || {} })
+        throw error
       }
     },
 
@@ -232,7 +237,8 @@ export const useEstablishementStore = defineStore('establishement', {
         const response = await api.put('/establishements/restaurant/update/', restaurantData)
         this.establishement.restaurant = response.data
       } catch (error) {
-        this.setErrors(error.response?.data || {})
+        this.setErrors({ updateRestaurant: error.response?.data || {} })
+        throw error
       }
     },
 
@@ -264,6 +270,7 @@ export const useEstablishementStore = defineStore('establishement', {
         await this.fetchOwnerEstablishement()
       } catch (error) {
         this.setErrors({ updateRoom: error.response?.data || {} })
+        throw error
       }
     },
 
@@ -306,6 +313,7 @@ export const useEstablishementStore = defineStore('establishement', {
       } catch (error) {
         console.log(error.response.data,"ici")
         this.setErrors({ updateTable: error.response?.data || {} })
+        throw error
       }
     },
 
@@ -344,6 +352,7 @@ export const useEstablishementStore = defineStore('establishement', {
         await this.fetchOwnerEstablishement()
       } catch (error) {
         this.setErrors({ updateMenuItem: error.response?.data || {} })
+        throw error
       }
     },
 

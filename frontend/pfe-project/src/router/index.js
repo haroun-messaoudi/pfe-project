@@ -17,6 +17,8 @@ import OuReservations from '@/views/ouReservations.vue'
 import OuReviews from '@/views/ouReviews.vue'
 import NotFoundPage from '@/views/notFoundPage.vue'
 import HomeWrapper from '@/views/homeWrapper.vue'
+import RoomsListPage from '@/views/roomsListPage.vue'
+import TablesListPage from '@/views/tablesListPage.vue'
 
 const routes = [
   {
@@ -93,6 +95,16 @@ const routes = [
     path: '/:catchAll(.*)',
     name: 'Not-Found-Page',
     component: NotFoundPage
+  },
+  {
+    path:'/rooms/:id',
+    name: 'roomsList',
+    component : RoomsListPage
+  },
+  {
+    path:'/tables/:id',
+    name: 'tablesList',
+    component : TablesListPage
   }
 ]
 

@@ -4,6 +4,7 @@ import api from '@/axios' // Your custom Axios instance with interceptors
 import { useEstablishementStore } from './establishement'
 import { useProfileStore } from './profile'
 import router from '@/router' 
+import { useReservationsStore } from './reservations'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -97,6 +98,7 @@ export const useUserStore = defineStore('user', {
         const userStore = useUserStore()
         const profileStore = useProfileStore()
         const estabStore   = useEstablishementStore()
+        const reservationStore = useReservationsStore()
     
         // clear tokens + auth state
         userStore.$reset()
@@ -104,7 +106,7 @@ export const useUserStore = defineStore('user', {
         // clear your other stores
         profileStore.$reset()
         estabStore.$reset()
-    
+        reservationStore.$reset()
         // also clear any default axios headers
         delete api.defaults.headers.common['Authorization']
     
