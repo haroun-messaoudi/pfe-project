@@ -13,7 +13,8 @@ const props = defineProps({
 });
 
 console.log(props)
-
+let subDescription = props.cardInfo.description.slice(0,50)
+subDescription = subDescription && subDescription + "..."
 </script>
 
 <template>
@@ -44,7 +45,7 @@ console.log(props)
     <!-- Content: Description -->
     <template #content>
       <p class="text-gray-700 mb-4">
-        {{ props.cardInfo.description || 'No description available.' }}
+        {{ subDescription || 'No description available.' }}
       </p>
     </template>
 

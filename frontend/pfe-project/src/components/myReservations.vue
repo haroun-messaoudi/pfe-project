@@ -26,7 +26,11 @@ console.log('restaurants:', props.restaurantReservation)
       <h2 class="text-3xl border-b p-5 border-gray-500 font-bold mb-6 text-center">
         My Reservations
       </h2>
+      <h1 v-if="!props.hotelReservation.length && !props.restaurantReservation.length" class="text-3xl font-normal text-center text-gray-500">You have no pending reservations.</h1>
       <div class="flex flex-col gap-4">
+        
+        <h1 v-if="props.hotelReservation.length" class="text-3xl font-semibold">Hotels reservations:</h1>
+
         <myReservation
           v-for="room in props.hotelReservation"
           :key='room.id'
@@ -38,6 +42,7 @@ console.log('restaurants:', props.restaurantReservation)
           :roomType='room.room_type'
           :id="room.id"
         />
+        <h1 v-if="props.restaurantReservation.length" class="text-3xl font-semibold">Restaurants reservations:</h1>
         <myReservationR
           v-for="table in props.restaurantReservation"
           :key="table.id"

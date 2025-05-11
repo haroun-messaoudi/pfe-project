@@ -7,6 +7,7 @@ import MultiSelect from 'primevue/multiselect'
 import Button from 'primevue/button'
 import Message from 'primevue/message'
 import Dropdown from 'primevue/dropdown'
+import ownerNav from '@/components/ownerNav.vue'
 import api from '@/axios'
 import { FileUpload } from 'primevue'
 import { watch } from 'vue'
@@ -361,6 +362,8 @@ console.log(errors,"eererererererer")
 </script>
 
 <template>
+  <div>
+  <ownerNav/>
   <div v-if="isLoading" class="text-center mt-16">
     <p>Loading establishment details...</p>
   </div>
@@ -685,4 +688,6 @@ console.log(errors,"eererererererer")
 
     </div>
   </div>
+
+</div>
 </template>

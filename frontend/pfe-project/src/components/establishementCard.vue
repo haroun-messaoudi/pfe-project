@@ -162,7 +162,7 @@ function onReserved() {
     <!-- Description & Actions -->
     <div class="flex flex-col flex-1">
       <Panel class="h-5/6 w-full" header="Description">
-        <p class="m-0">{{ props.description }}</p>
+        <p class="m-0">{{ props.description  }}</p>
       </Panel>
       <div class="flex gap-6 py-5 justify-center" v-if="userStore.isAuthenticated">
         <Button label="Add A Review" severity="warn" raised @click="reviewDialogVisible = true" />

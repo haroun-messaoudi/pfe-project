@@ -11,6 +11,7 @@ import 'toastify-js/src/toastify.css'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { useUserStore } from './stores/user'
 import { setupInterceptors } from './axios'
+import { ConfirmationService } from 'primevue';
 const app = createApp(App)
 
 const pinia = createPinia()
@@ -25,5 +26,6 @@ app.use(PrimeVue, {
     }
 })
 app.use(Toastify);
+app.use(ConfirmationService)
 app.mount('#app')
 
