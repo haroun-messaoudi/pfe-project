@@ -419,7 +419,7 @@ console.log(errors,"eererererererer")
     </form>
 
     <!-- Hotel Details -->
-    <div v-if="form?.hotel" class="mt-8">
+  <div v-if="form?.hotel" class="mt-8">
   <h3 class="text-xl font-bold mb-4">Hotel Details</h3>
   <div>
     <label class="block font-medium">Stars</label>
@@ -450,7 +450,7 @@ console.log(errors,"eererererererer")
     <Message v-if="errors.hotel.amenities" severity="error">{{ errors.hotel.amenities }}</Message>
   </div>
   <Button label="Update Hotel" class="p-button-success mt-4" @click="updateHotel" />
-</div>
+
     <!-- Rooms Section -->
     <h4 class="text-lg font-bold mt-4">Rooms</h4>
     <div v-for="room in form.hotel?.rooms" :key="room.id" class="border p-4 rounded-md mb-4">
@@ -524,6 +524,7 @@ console.log(errors,"eererererererer")
         <Message v-if="errors.newRoom.image" severity="error">{{ errors.newRoom.image }}</Message>
       <Button label="Add Room" class="p-button-success mt-2" @click="addRoom" />
     </div>
+  </div>
     <!-- Restaurant Details -->
     <div v-if="form?.restaurant" class="mt-8">
       <h3 class="text-xl font-bold mb-4">Restaurant Details</h3>

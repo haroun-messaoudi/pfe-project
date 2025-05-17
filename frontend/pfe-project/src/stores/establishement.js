@@ -205,7 +205,7 @@ export const useEstablishementStore = defineStore('establishement', {
     async updateEstablishement(data) {
       try {
         this.clearErrors()
-        const response = await api.put('/establishements/update/', data)
+        const response = await api.patch('/establishements/update/', data)
         this.establishement = response.data
       } catch (error) {
         // grab either the nested `errors` or the top‐level data
@@ -221,7 +221,7 @@ export const useEstablishementStore = defineStore('establishement', {
     async updateHotel(hotelData) {
       try {
         this.clearErrors()
-        const response = await api.put('/establishements/hotel/update/', hotelData)
+        const response = await api.patch('/establishements/hotel/update/', hotelData)
         console.log(response,"hnaaa")
         this.establishement.hotel = response.data
       } catch (error) {
@@ -234,7 +234,7 @@ export const useEstablishementStore = defineStore('establishement', {
     async updateRestaurant(restaurantData) {
       try {
         this.clearErrors()
-        const response = await api.put('/establishements/restaurant/update/', restaurantData)
+        const response = await api.patch('/establishements/restaurant/update/', restaurantData)
         this.establishement.restaurant = response.data
       } catch (error) {
         this.setErrors({ updateRestaurant: error.response?.data || {} })
@@ -262,7 +262,7 @@ export const useEstablishementStore = defineStore('establishement', {
     async updateRoom(roomId, formData) {
       try {
         this.clearErrors()
-        await api.put(
+        await api.patch(
           `/establishements/hotel/room/update/${roomId}/`,
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
@@ -304,7 +304,7 @@ export const useEstablishementStore = defineStore('establishement', {
     async updateTable(tableId, formData) {
       try {
         this.clearErrors()
-        await api.put(
+        await api.patch(
           `/establishements/restaurant/table/update/${tableId}/`,
           formData,
           { headers: { 'Content-Type': 'multipart/form-data' } }
