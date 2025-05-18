@@ -62,6 +62,7 @@ function onReserved() {
     <!-- restaurant reservation dialog -->
     <restaurantReservationDialog
       :restaurantId="selectedTable"
+      :tableInfo="tables.find(t => t.id === selectedTable)"
       v-model:visible="showDialog"
       @reserved="onReserved"
     />

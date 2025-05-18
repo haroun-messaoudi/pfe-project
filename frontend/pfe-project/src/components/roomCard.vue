@@ -1,59 +1,53 @@
 <script setup>
-import Card from 'primevue/card';
-
-import restImg from '@/assets/img/rest.webp';
-import { warn } from 'vue';
+import Card from 'primevue/card'
+import restImg from '@/assets/img/rest.webp'
 
 const props = defineProps({
-  tableInfo: {
+  roomInfo: {
     type: Object,
     required: true
   }
-});
+})
+console.log(props.roomInfo)
 </script>
 
 <template>
   <!-- Card fills its grid column using w-full -->
   <Card class="bg-orange-50 p-4 w-full overflow-hidden">
-    <!-- Header: Establishment Image -->
+    <!-- Header: Room Image -->
     <template #header>
       <img
-        :src="props.tableInfo.image_url || restImg"
-        alt="Establishment image"
+        :src="props.roomInfo.image_url || restImg"
+        alt="Room image"
         class="w-full h-48 object-cover mb-4"
       />
     </template>
 
-    <!-- Title: capacity -->
+    <!-- Title: Room Type -->
     <template #title>
-      <h3 class="text-xl font-semibold">Capacity:{{ props.tableInfo.capacity }}</h3>
+      <h3 class="text-xl font-semibold">Type: {{ props.roomInfo.room_type }}</h3>
     </template>
 
-    <!-- Subtitle: total rooms alike -->
+    <!-- Subtitle: Capacity -->
     <template #subtitle>
-      <span class="capitalize">Available:{{ props.tableInfo.amount }}</span>
-      <span class="mx-1">•</span>
+      <span class="capitalize">Capacity: {{ props.roomInfo.capacity }} guest(s)</span>
     </template>
 
-    <!-- Content: Description -->
+    <!-- Content: Price and Description -->
     <template #content>
       <p class="text-gray-700 mb-4">
-        Description:{{ props.tableInfo.description || 'No description available.' }}
+        <strong>Price:</strong> {{ props.roomInfo.price_per_night }} DA
+      </p>
+      <p class="text-gray-700">
+        <strong>Description:</strong>
+        {{ props.roomInfo.description || 'No description available.' }}
       </p>
     </template>
-    <!-- Content: price per one night -->
-    <template #content1>
-      <p class="text-gray-700 mb-4">
-        Price per night:{{ props.tableInfo.price_per_night }}
-      </p>
-    </template>
-    <!-- Footer: rooms type -->
+
+    <!-- Footer: Actions slot (e.g., Book button) -->
     <template #footer>
-      <div class="flex flex-col">
-        <small class="text-sm text-gray-600 mb-2">
-          Type: {{ props.tableInfo.room_type }}
-        </small>
-        
+      <div class="flex justify-end">
+        <slot name="actions" />
       </div>
     </template>
   </Card>

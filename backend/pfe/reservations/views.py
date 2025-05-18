@@ -1,6 +1,6 @@
 # reservations/views.py
 
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions ,status
 from rest_framework.views import APIView
 from django.shortcuts  import get_object_or_404
 from .models  import HotelReservation, RestaurantReservation
@@ -9,7 +9,7 @@ from .permissions    import IsClient , IsOwner
 from establishements.models  import Hotel, Restaurant
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
-
+from establishements.models import Establishement
 class ListHotelReservations(generics.ListAPIView):
     serializer_class   = HotelReservationSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -17,7 +17,6 @@ class ListHotelReservations(generics.ListAPIView):
     def get_queryset(self):
         hotel = get_object_or_404(Hotel, id=self.kwargs['establishment_id'])
         return HotelReservation.objects.filter(room__hotel=hotel)
-
 
 class ListRestaurantReservations(generics.ListAPIView):
     serializer_class   = RestaurantReservationSerializer
@@ -28,6 +27,34 @@ class ListRestaurantReservations(generics.ListAPIView):
         return RestaurantReservation.objects.filter(table__restaurant=restaurant)
 
 
+class ListOwnerReservations(APIView):
+    permission_classes = [IsOwner]
+
+    def get(self, request):
+        # 1) grab your Establishement object
+        establishment = request.user.profile.establishement
+
+        if establishment.type == "restaurant":
+            # 2a) directly filter by the chain: reservation → table → restaurant → establishment
+            reservations = RestaurantReservation.objects.filter(
+                table__restaurant__establishement=establishment
+            )
+            serializer = RestaurantReservationSerializer(reservations, many=True)
+
+        elif establishment.type == "hotel":
+            # 2b) same idea for hotel → room → hotel → establishment
+            reservations = HotelReservation.objects.filter(
+                room__hotel__establishement=establishment
+            )
+            serializer = HotelReservationSerializer(reservations, many=True)
+
+        else:
+            return Response(
+                {"detail": "Unsupported establishment type."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ListClientReservations(APIView):
     permission_classes = [permissions.IsAuthenticated, IsClient]
@@ -114,13 +141,13 @@ class DeleteAnyReservation(generics.DestroyAPIView):
             return get_object_or_404(
                 HotelReservation,
                 id=reservation_id,
-                room__hotel__owner=owner
+                room__hotel__establishement__profile=owner
             )
         elif reservation_type == 'restaurants':
             return get_object_or_404(
                 RestaurantReservation,
                 id=reservation_id,
-                table__restaurant__owner=owner
+                table__restaurant__establishement__profile=owner
             )
         raise NotFound(f"Unknown reservation type “{reservation_type}”.")
     

@@ -1,56 +1,97 @@
 <script setup>
-import { ref, watch } from 'vue'
-import  Dialog  from 'primevue/dialog'
-import  Button  from 'primevue/button'
-import Calendar  from 'primevue/calendar'
-import InputNumber  from 'primevue/inputnumber'
+import { ref, watch, computed } from 'vue'
+import Dialog from 'primevue/dialog'
+import Calendar from 'primevue/calendar'
+import InputNumber from 'primevue/inputnumber'
+import Button from 'primevue/button'
 import api from '@/axios'
 import { Toast } from 'primevue'
+import { useRoute } from 'vue-router';
 
-// props: the hotel’s ID so we know which hotel/room to reserve
 const props = defineProps({
-  hotelId: { type: [String, Number], required: true },
-  visible:   { type: Boolean, default: false }
+  roomInfo : {type : Object},
+  visible: { type: Boolean, default: false }
 })
-const emit = defineEmits(['update:visible','reserved'])
+const emit = defineEmits(['update:visible', 'reserved'])
+const { params } = useRoute();
+const establishmentId = params.id;
 
+// form fields
 const form = ref({
-  room: null,
   check_in_date: null,
   check_out_date: null,
-  number_of_people: 1
+  numberOfPeople: 1
 })
 const errors = ref({})
 
-// Fetch available rooms when dialog opens
-async function loadRooms() {
+// load room details when dialog opens
+const roomData = ref(null)
+watch(() => props.visible, async v => {
+  if (v) {
+    resetForm()
+    await loadRoom()
+  }
+})
+
+async function loadRoom() {
   try {
-    const { data } = await api.get(`/hotels/${props.hotelId}/rooms/available/`)
-    rooms.value = data
-  } catch (e) { console.error(e) }
+    const { data } = await api.get(`reversations/hotels/rooms/${props.roomId}/`) // fetch single room
+    roomData.value = data
+  } catch (err) {
+    console.error('Failed loading room:', err)
+  }
 }
-const rooms = ref([])
-watch(() => props.visible, v => v && loadRooms())
+
+function resetForm() {
+  form.value.check_in_date = null
+  form.value.check_out_date = null
+  form.value.numberOfPeople = 1
+  errors.value = {}
+  roomData.value = null
+}
+
+// validations
+const maxGuests = computed(() => roomData.value?.capacity || 1)
+const isOverMax = computed(() => form.value.numberOfPeople > maxGuests.value)
+const isDateInvalid = computed(() => {
+  const { check_in_date: ci, check_out_date: co } = form.value
+  return ci && co ? new Date(ci) >= new Date(co) : false
+})
 
 function close() {
   emit('update:visible', false)
-  form.value = { room: null, check_in_date: null, check_out_date: null, number_of_people: 1 }
-  errors.value = {}
+  resetForm()
 }
 
 async function submit() {
   errors.value = {}
+  if (isOverMax.value) {
+    errors.value.numberOfPeople = `Cannot exceed capacity of ${maxGuests.value} guests.`
+  }
+  if (isDateInvalid.value) {
+    errors.value.check_out_date = 'Check-out must be after check-in.'
+  }
+  if (Object.keys(errors.value).length) return
+
   try {
-    const payload = { ...form.value }
-    await api.post(`/reservations/hotel/create/`, payload)
+    await api.post(
+      `reservations/hotels/2/add`,
+      {
+        room: props.roomInfo.id,
+        check_in_date: form.value.check_in_date,
+        check_out_date: form.value.check_out_date,
+        number_of_people: form.value.numberOfPeople
+      }
+    )
+
+    // Toast.add({ severity: 'success', summary: 'Done', detail: 'Room booked!' })
     emit('reserved')
     close()
-    Toast.add({ severity:'success', summary:'Done', detail:'Hotel booked!' })
   } catch (err) {
-    // map DRF errors into our `errors` object
+    console.log(err)
     const data = err.response?.data || {}
-    for (let key in data) {
-      errors.value[key] = Array.isArray(data[key]) ? data[key][0] : data[key]
+    for (let k in data) {
+      errors.value[k] = Array.isArray(data[k]) ? data[k][0] : data[k]
     }
   }
 }
@@ -59,30 +100,35 @@ async function submit() {
 <template>
   <Dialog :visible="visible" modal header="Book a Room" @hide="close">
     <div class="p-fluid grid">
-      <div class="field col-12">
-        <label for="room">Room</label>
-        <Dropdown v-model="form.room" :options="rooms" optionLabel="room_type" optionValue="id" />
-        <small v-if="errors.room" class="p-error">{{ errors.room }}</small>
-      </div>
       <div class="field col-6">
         <label for="checkin">Check-In</label>
-        <Calendar v-model="form.check_in_date" dateFormat="yy-mm-dd"/>
+        <Calendar v-model="form.check_in_date" dateFormat="yy-mm-dd" />
         <small v-if="errors.check_in_date" class="p-error">{{ errors.check_in_date }}</small>
       </div>
       <div class="field col-6">
         <label for="checkout">Check-Out</label>
-        <Calendar v-model="form.check_out_date" dateFormat="yy-mm-dd"/>
+        <Calendar v-model="form.check_out_date" dateFormat="yy-mm-dd" />
         <small v-if="errors.check_out_date" class="p-error">{{ errors.check_out_date }}</small>
       </div>
       <div class="field col-12">
-        <label for="num">Guests</label>
-        <InputNumber v-model="form.number_of_people" :min="1"/>
-        <small v-if="errors.number_of_people" class="p-error">{{ errors.number_of_people }}</small>
+        <label for="num">Guests (max {{ maxGuests }})</label>
+        <InputNumber v-model="form.numberOfPeople" :min="1" mode="decimal" />
+        <small v-if="isOverMax" class="p-error">
+          Cannot exceed capacity of {{ maxGuests }} guests.
+        </small>
+        <small v-else-if="errors.numberOfPeople" class="p-error">
+          {{ errors.numberOfPeople }}
+        </small>
       </div>
     </div>
     <template #footer>
-      <Button label="Cancel" text @click="close"/>
-      <Button label="Book" severity="success" @click="submit"/>
+      <Button label="Cancel" text @click="close" />
+      <Button
+        label="Book"
+        severity="success"
+        @click="submit"
+        :disabled="isOverMax || isDateInvalid"
+      />
     </template>
   </Dialog>
 </template>

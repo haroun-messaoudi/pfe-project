@@ -23,7 +23,7 @@ class HotelReservationSerializer(serializers.ModelSerializer):
             'room_type'
         ]
         
-        read_only_fields = ['id', 'status', 'created_at','establishment','room_type']
+        read_only_fields = ['id', 'status', 'created_at','establishment','room_type','guest']
     def get_check_in_date(obj):
         return obj.chek_in_date.strftime('%Y-%m-%d')
     def get_check_out_date(obj):
@@ -107,7 +107,7 @@ class RestaurantReservationSerializer(serializers.ModelSerializer):
             'establishment',
             'table_location'
         ]
-        read_only_fields = ['id', 'status', 'created_at','establishment','table_location']
+        read_only_fields = ['id', 'status', 'created_at','establishment','table_location','guest']
 
     def get_establishment(self,obj):
         return obj.table.restaurant.establishement.name 

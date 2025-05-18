@@ -32,7 +32,7 @@ import Button from 'primevue/button';
       </div>
       
       <div class="flex space-x-4">
-        <img class="h-20 w-auto rounded-lg"  src="@/assets/img/thr.png" >
+        <img class="h-20 w-auto rounded-lg"  src="@/assets/img/thr1.png" >
         <div>
             <h2>irki tahar</h2>
             <p>taharirki8@gmail.com</p>

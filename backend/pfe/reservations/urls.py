@@ -1,7 +1,7 @@
 # reservations/urls.py
 
 from django.urls import path
-from .views      import  ListHotelReservations,DeleteAnyReservation,CancelReservation, ListRestaurantReservations, AddHotelReservation,AddRestaurantReservation,ListClientReservations
+from .views      import  ListHotelReservations,ListOwnerReservations,DeleteAnyReservation,CancelReservation, ListRestaurantReservations, AddHotelReservation,AddRestaurantReservation,ListClientReservations
 
 
 urlpatterns = [
@@ -38,6 +38,12 @@ urlpatterns = [
         'client/list/',
         ListClientReservations.as_view(),
         name='client-reservations'
+
+    ),
+    path(
+        'owner/list/',
+        ListOwnerReservations.as_view(),
+        name='owner-reservations'
 
     )
 ]
